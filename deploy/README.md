@@ -1,18 +1,25 @@
 # GCP Deploy Notes
 
-## Prerequisites
-- GCP project with Compute Engine API enabled
-- Billing account linked
+## Current deployment
+- Project: `tripagent-svc`
+- VM: `trip-listener` in `us-west1-a` (e2-micro, Debian 12, 30GB disk)
+- User: `maestro` / Working dir: `/opt/maestroagent`
+- Service: `trip-listener.service` (systemd, `Restart=always`)
+- Cost: $0/mo (GCP Always-Free tier: 1 e2-micro in us-west1/central1/east1)
+
+## Prerequisites (for fresh re-deploy)
+- GCP project with Compute Engine API enabled + billing linked
 - gcloud CLI authenticated
 
 ## VM creation
 ```bash
 gcloud compute instances create trip-listener \
-    --project=<PROJECT_ID> \
+    --project=tripagent-svc \
     --zone=us-west1-a \
     --machine-type=e2-micro \
     --image-family=debian-12 \
     --image-project=debian-cloud \
+    --boot-disk-size=30GB \
     --tags=trip-listener
 ```
 
@@ -60,4 +67,23 @@ cd /opt/maestroagent
 sudo -u maestro git pull
 sudo -u maestro venv/bin/pip install -r requirements.txt
 sudo systemctl restart trip-listener
+```
+
+## Remote ops (from local)
+```bash
+# Tail logs
+gcloud compute ssh trip-listener --zone=us-west1-a \
+    --command="sudo journalctl -u trip-listener -f"
+
+# Restart
+gcloud compute ssh trip-listener --zone=us-west1-a \
+    --command="sudo systemctl restart trip-listener"
+
+# Pull + restart
+gcloud compute ssh trip-listener --zone=us-west1-a --command="
+    cd /opt/maestroagent &&
+    sudo -u maestro git pull &&
+    sudo -u maestro venv/bin/pip install -q -r requirements.txt &&
+    sudo systemctl restart trip-listener
+"
 ```
