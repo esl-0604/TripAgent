@@ -1,0 +1,17 @@
+[Unit]
+Description=Trip Agent Slack listener + Dropbox upload watcher
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=maestro
+WorkingDirectory=/opt/maestroagent
+ExecStart=/opt/maestroagent/venv/bin/python -u /opt/maestroagent/tasks/trip_listener.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

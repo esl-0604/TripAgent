@@ -1,0 +1,25 @@
+# Secrets — never commit
+.env
+
+# Runtime state (cursor, archive progress)
+state/*
+!state/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+*.egg-info/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temp
+.tmp/
+*.log
