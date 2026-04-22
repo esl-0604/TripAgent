@@ -3,327 +3,725 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Trip Agent 온보딩 · Endorobotics</title>
-  <meta name="description" content="출장 중 팀원 기록을 Slack과 Dropbox에 자동 정리하는 Trip Agent 봇 사용 가이드.">
+  <title>DDW 2026 · ESGE 2026 출장 대시보드 · Endorobotics</title>
+  <meta name="description" content="DDW 2026 (Chicago) & ESGE Days 2026 (Milan) 출장 인원용 통합 대시보드.">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', 'Noto Sans KR', -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
-    .cmd { background: #1e293b; color: #e2e8f0; padding: 0.12em 0.45em; border-radius: 4px; font-family: ui-monospace, SFMono-Regular, monospace; font-size: 0.9em; white-space: nowrap; }
-    .hero-gradient { background: radial-gradient(ellipse at top, rgba(99,102,241,0.15), transparent 60%), radial-gradient(ellipse at bottom right, rgba(168,85,247,0.12), transparent 60%); }
-    details[open] > summary::after { transform: rotate(180deg); }
-    details > summary::after { content: '▾'; float: right; transition: transform 0.2s; color: #94a3b8; }
-    details > summary { list-style: none; }
+    :root {
+      --brand: #1e3a8a;
+      --brand-hover: #1e40af;
+      --brand-soft: #eff6ff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --surface: #ffffff;
+      --bg: #f8fafc;
+    }
+    body { font-family: 'Inter', 'Noto Sans KR', -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; color: var(--text); background: var(--bg); }
+    .cmd { background: #f1f5f9; color: var(--text); padding: 0.1em 0.4em; border-radius: 3px; font-family: ui-monospace, SFMono-Regular, monospace; font-size: 0.88em; border: 1px solid var(--border); }
+    .todo { background: #fef9c3; border: 1px solid #fde047; color: #713f12; padding: 0.1em 0.45em; border-radius: 3px; font-size: 0.82em; font-weight: 500; }
+
+    details > summary { list-style: none; cursor: pointer; }
     details > summary::-webkit-details-marker { display: none; }
+    details > summary::after { content: '+'; float: right; color: #94a3b8; font-weight: 400; font-size: 1.1em; }
+    details[open] > summary::after { content: '−'; }
+
+    html { scroll-behavior: smooth; }
+
+    .num-badge { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 50%; background: var(--brand); color: white; font-weight: 700; font-size: 0.875rem; flex-shrink: 0; }
+
+    .sec-h { display: flex; align-items: center; gap: 0.75rem; font-size: 1.625rem; font-weight: 700; margin-top: 5rem; margin-bottom: 1.25rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+    .tab-content > section:first-child .sec-h { margin-top: 1rem; padding-top: 0; border-top: none; }
+
+    .sub-h { font-size: 1rem; font-weight: 600; margin-top: 1.75rem; margin-bottom: 0.625rem; color: #1e293b; }
+
+    a.link { color: var(--brand-hover); text-decoration: underline; text-underline-offset: 2px; }
+    a.link:hover { color: var(--brand); }
+
+    .dl-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.625rem 1rem; background: white; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; font-weight: 500; transition: all 0.12s; text-decoration: none; color: var(--text); cursor: pointer; font-family: inherit; }
+    .dl-btn:hover { border-color: var(--brand); background: var(--brand-soft); color: var(--brand); }
+    .dl-btn::after { content: '↗'; color: #94a3b8; font-size: 0.9em; }
+    .dl-btn.qr-btn::after { content: '📱'; font-size: 0.9em; }
+
+    .primary-btn { background: var(--brand); color: white; padding: 0.75rem 1rem; border-radius: 6px; font-weight: 600; transition: background 0.12s; width: 100%; font-size: 0.9rem; cursor: pointer; border: 0; font-family: inherit; }
+    .primary-btn:hover { background: var(--brand-hover); }
+
+    /* Tabs */
+    .tab-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+    @media (max-width: 640px) { .tab-bar { grid-template-columns: repeat(2, 1fr); } }
+    .tab-btn { display: flex; flex-direction: column; gap: 0.25rem; padding: 0.875rem 1rem; background: white; border: 1px solid var(--border); border-radius: 8px; text-align: left; transition: all 0.12s; cursor: pointer; font-family: inherit; color: inherit; }
+    .tab-btn:hover { border-color: #94a3b8; }
+    .tab-btn[aria-selected="true"] { background: var(--brand); border-color: var(--brand); color: white; }
+    .tab-btn[aria-selected="true"] .tab-sub { color: rgba(255,255,255,0.7); }
+    .tab-label { font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; }
+    .tab-num { display: inline-flex; width: 1.25rem; height: 1.25rem; align-items: center; justify-content: center; border-radius: 4px; background: #f1f5f9; color: #475569; font-size: 0.7rem; font-weight: 700; }
+    .tab-btn[aria-selected="true"] .tab-num { background: rgba(255,255,255,0.18); color: white; }
+    .tab-sub { font-size: 0.75rem; color: #64748b; line-height: 1.3; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.2s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* QR Modal */
+    .qr-modal { position: fixed; inset: 0; background: rgba(15,23,42,0.55); display: flex; align-items: center; justify-content: center; z-index: 50; animation: fadeIn 0.15s ease-out; }
+    .qr-modal.hidden { display: none; }
+    .qr-modal-content { background: white; border-radius: 12px; padding: 1.75rem; max-width: 360px; width: calc(100% - 2rem); position: relative; box-shadow: 0 12px 32px rgba(0,0,0,0.15); }
+    .qr-close { position: absolute; top: 0.75rem; right: 0.75rem; background: transparent; border: 0; font-size: 1.5rem; color: #94a3b8; cursor: pointer; padding: 0.25rem 0.625rem; line-height: 1; }
+    .qr-close:hover { color: var(--text); }
+    .qr-modal h3 { font-weight: 700; font-size: 1.125rem; margin-bottom: 0.5rem; }
+    .qr-modal p { color: #64748b; font-size: 0.875rem; margin-bottom: 1rem; }
+    .qr-modal img { display: block; margin: 0 auto 1rem; border: 1px solid var(--border); border-radius: 6px; }
+
+    /* Screenshots with red markers */
+    .screenshot { margin: 1rem 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: white; }
+    .screenshot-wrap { position: relative; display: block; line-height: 0; }
+    .screenshot-wrap img { max-width: 100%; height: auto; display: block; }
+    .screenshot-wrap .marker { position: absolute; border: 3px solid #ef4444; border-radius: 4px; box-sizing: border-box; pointer-events: none; box-shadow: 0 0 0 2px rgba(239,68,68,0.15); }
+    .screenshot-wrap .marker-label { position: absolute; background: #ef4444; color: white; padding: 2px 7px; border-radius: 3px; font-size: 0.7rem; font-weight: 700; white-space: nowrap; font-family: 'Inter', sans-serif; line-height: 1.3; }
+    .screenshot figcaption { padding: 0.625rem 0.875rem; font-size: 0.8rem; color: #475569; background: #f8fafc; border-top: 1px solid var(--border); line-height: 1.5; }
+    .img-missing { padding: 2.5rem 1rem; text-align: center; color: #94a3b8; font-size: 0.85rem; background: #f1f5f9; }
+
+    @media print {
+      .tab-bar, nav.top, .qr-modal { display: none; }
+      .tab-content { display: block !important; page-break-before: always; }
+      body { background: white; }
+    }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body>
 
-<nav class="bg-white/80 backdrop-blur border-b border-slate-200 sticky top-0 z-20">
-  <div class="max-w-5xl mx-auto px-6 py-3.5 flex items-center justify-between">
-    <div class="flex items-center gap-2.5">
-      <div class="w-7 h-7 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-md flex items-center justify-center text-white text-xs font-bold">TA</div>
-      <span class="font-bold">Trip Agent</span>
-    </div>
-    <div class="hidden md:flex gap-5 text-sm text-slate-600">
-      <a href="#signup" class="hover:text-indigo-600 font-medium">초대 요청</a>
-      <a href="#before" class="hover:text-indigo-600">출장 전</a>
-      <a href="#during" class="hover:text-indigo-600">출장 중</a>
-      <a href="#tips" class="hover:text-indigo-600">잘 쓰는 팁</a>
-      <a href="#faq" class="hover:text-indigo-600">FAQ</a>
-    </div>
-    <a href="#signup" class="md:hidden bg-indigo-600 text-white text-sm px-3 py-1.5 rounded font-medium">초대받기</a>
+<nav class="top border-b border-slate-200 sticky top-0 bg-white/95 backdrop-blur z-20">
+  <div class="max-w-4xl mx-auto px-5 py-3 flex items-center justify-between">
+    <a href="#top" class="font-semibold text-sm" style="color: var(--brand);">출장 대시보드</a>
+    <a href="mailto:eunsang.lee@endorobo.com" class="text-xs hover:underline" style="color: var(--muted);">문의 ↗</a>
   </div>
 </nav>
 
-<section class="hero-gradient">
-  <div class="max-w-4xl mx-auto px-6 pt-20 pb-16 text-center">
-    <div class="inline-block px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-full mb-5">Endorobotics 해외출장 공식 툴</div>
-    <h1 class="text-4xl md:text-5xl font-extrabold mb-5 tracking-tight text-slate-900">
-      출장, 혼자 적지 말고<br class="hidden sm:inline"> 팀으로 기록하자
-    </h1>
-    <p class="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-      Trip Agent는 학회·출장 중 팀원 각자가 수집한 관찰·사진·영상을
-      Slack 쓰레드와 Dropbox에 자동으로 정리하는 봇입니다.
-      매일 저녁 피드백 미팅과 출장보고서 작성이 즉시 가능해집니다.
-    </p>
-    <div class="mt-9 flex flex-col sm:flex-row gap-3 justify-center">
-      <a href="#signup" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-sm">
-        Slack 초대 요청하기 →
-      </a>
-      <a href="#during" class="border border-slate-300 bg-white text-slate-700 px-6 py-3 rounded-lg font-medium hover:bg-slate-50 transition">
-        사용법 먼저 보기
-      </a>
+<main class="max-w-4xl mx-auto px-6">
+
+<!-- Hero -->
+<header id="top" class="py-10">
+  <div class="text-xs uppercase tracking-[0.15em] font-semibold mb-3" style="color: var(--brand);">Endorobotics · 2026 Spring</div>
+  <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight leading-tight">
+    DDW 2026 · ESGE 2026<br>
+    <span class="font-normal text-3xl md:text-4xl" style="color: var(--muted);">출장 대시보드</span>
+  </h1>
+  <p class="leading-relaxed max-w-2xl text-[0.97rem]" style="color: var(--muted);">
+    Chicago(5/2–5)와 Milan(5/14–16) 출장에 필요한 Tool 셋업·개인 준비·제품·KOL·학회 정보를 한 곳에 정리했습니다.
+    아래 탭에서 필요한 주제를 선택하세요.
+  </p>
+
+  <div class="mt-6 grid sm:grid-cols-2 gap-3">
+    <div class="border rounded-lg p-4 bg-white" style="border-color: var(--border);">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="text-xs font-semibold" style="color: var(--brand);">DDW 2026</div>
+        <div class="text-xs">🇺🇸</div>
+      </div>
+      <div class="font-semibold">5/2–5 Chicago</div>
+      <div class="text-sm mt-0.5" style="color: var(--muted);">McCormick Place (West)</div>
+      <div class="text-xs mt-2" style="color: #94a3b8;">출장 일정 <code class="cmd">260501-07</code></div>
+    </div>
+    <div class="border rounded-lg p-4 bg-white" style="border-color: var(--border);">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="text-xs font-semibold" style="color: var(--brand);">ESGE Days 2026</div>
+        <div class="text-xs">🇮🇹</div>
+      </div>
+      <div class="font-semibold">5/14–16 Milan</div>
+      <div class="text-sm mt-0.5" style="color: var(--muted);">Allianz MiCo</div>
+      <div class="text-xs mt-2" style="color: #94a3b8;">출장 일정 <code class="cmd">260512-17</code></div>
     </div>
   </div>
+</header>
+
+<!-- Tab buttons -->
+<div class="tab-bar mb-8" role="tablist">
+  <button class="tab-btn" role="tab" aria-selected="true" data-tab="slack">
+    <div class="tab-label"><span class="tab-num">A</span>관련 Tool 셋업</div>
+    <div class="tab-sub">가입 · 앱 설치 · 기록법</div>
+  </button>
+  <button class="tab-btn" role="tab" aria-selected="false" data-tab="trip">
+    <div class="tab-label"><span class="tab-num">B</span>출장 & 학회</div>
+    <div class="tab-sub">준비물 · DDW · ESGE</div>
+  </button>
+  <button class="tab-btn" role="tab" aria-selected="false" data-tab="products">
+    <div class="tab-label"><span class="tab-num">C</span>회사 제품</div>
+    <div class="tab-sub">EndoCup · Tracloser 등</div>
+  </button>
+  <button class="tab-btn" role="tab" aria-selected="false" data-tab="kol">
+    <div class="tab-label"><span class="tab-num">D</span>KOL 리스트</div>
+    <div class="tab-sub">과거 접점 · 예상 참가자</div>
+  </button>
+</div>
+
+<!-- =============================== -->
+<!-- Tab A: Tool 셋업 (1, 2, 3) -->
+<!-- =============================== -->
+<div class="tab-content active" data-tab="slack" role="tabpanel">
+
+<section>
+  <h2 class="sec-h"><span class="num-badge">1</span>Slack 가입 & 워크스페이스 초대</h2>
+  <p class="leading-relaxed" style="color: var(--text);">
+    아래 버튼을 누르면 Endorobotics Slack 워크스페이스 가입 페이지가 바로 열립니다.
+    <strong>회사 이메일(<code class="cmd">@endorobo.com</code>)로만 가입</strong>할 수 있으며, 별도의 초대 메일 대기 없이 1~2분 안에 입장 완료됩니다.
+  </p>
+
+  <div class="border rounded-lg p-5 bg-white" style="border-color: var(--border);">
+    <a href="https://join.slack.com/t/endorobotics/shared_invite/zt-3vadmkd9w-5NUo9PkTbWodRM9AP2T9BQ" target="_blank" rel="noopener" class="primary-btn" style="display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; width:100%; text-decoration:none;">
+      Endorobotics Slack 가입하기 →
+    </a>
+    <p class="text-xs text-center mt-3" style="color: var(--muted);">버튼 클릭 → 회사 이메일 입력 → 이름·비밀번호 설정 → 가입 완료 + 워크스페이스 자동 입장</p>
+  </div>
+
+  <p class="text-xs mt-3" style="color: var(--muted);">📩 인증 메일(<code class="cmd">no-reply@slack.com</code>)이 오면 클릭하여 이메일 확인만 해주세요. 오지 않으면 스팸함 확인 → 그래도 없으면 이은상에게 문의.</p>
 </section>
 
-<section class="max-w-5xl mx-auto px-6 py-14">
-  <div class="grid md:grid-cols-3 gap-5">
-    <div class="bg-white p-6 rounded-xl border border-slate-200">
-      <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-4 text-xl">📱</div>
-      <h3 class="font-bold mb-2 text-slate-900">현장에서 바로 기록</h3>
-      <p class="text-sm text-slate-600 leading-relaxed">본 것·들은 것을 Slack 스레드에 10초만에 던지기. 나중에 정리 불필요.</p>
-    </div>
-    <div class="bg-white p-6 rounded-xl border border-slate-200">
-      <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-4 text-xl">🗂️</div>
-      <h3 class="font-bold mb-2 text-slate-900">Dropbox 자동 정리</h3>
-      <p class="text-sm text-slate-600 leading-relaxed">하루 끝에 <code class="cmd">!아카이브</code> 한 번. 댓글·사진이 날짜별 폴더로 동기화.</p>
-    </div>
-    <div class="bg-white p-6 rounded-xl border border-slate-200">
-      <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-4 text-xl">🎥</div>
-      <h3 class="font-bold mb-2 text-slate-900">대용량 영상도 편하게</h3>
-      <p class="text-sm text-slate-600 leading-relaxed"><code class="cmd">!대용량</code>으로 Dropbox 앱 링크 받기. 1GB+ 영상도 백그라운드 업로드.</p>
-    </div>
+<section>
+  <h2 class="sec-h"><span class="num-badge">2</span>Slack & Dropbox 앱 설치</h2>
+  <p class="leading-relaxed" style="color: var(--text);">
+    출장 중 알림과 현장 기록을 위해 데스크톱·모바일 앱 설치가 필요합니다.
+    Dropbox 모바일 앱도 <code class="cmd">!대용량</code> 기능에 필수입니다.
+    <span class="text-sm" style="color: var(--muted);">(모바일 버튼 클릭 시 QR이 나와서 폰 카메라로 바로 설치 가능)</span>
+  </p>
+
+  <h3 class="sub-h">Slack 데스크톱 앱</h3>
+  <div class="flex flex-wrap gap-2">
+    <a href="https://slack.com/downloads/windows" target="_blank" class="dl-btn">Windows 다운로드</a>
+    <a href="https://slack.com/downloads/mac" target="_blank" class="dl-btn">Mac 다운로드</a>
   </div>
+
+  <h3 class="sub-h">Slack 모바일 앱 <span class="text-xs font-normal text-red-600 ml-1">필수</span></h3>
+  <div class="flex flex-wrap gap-2">
+    <button type="button" class="dl-btn qr-btn" onclick="showQR('https://apps.apple.com/app/slack/id618783545','Slack · iPhone','iPhone 카메라로 QR을 스캔하면 App Store가 열립니다.')">App Store (iPhone)</button>
+    <button type="button" class="dl-btn qr-btn" onclick="showQR('https://play.google.com/store/apps/details?id=com.Slack','Slack · Android','Android 카메라로 QR을 스캔하면 Play 스토어가 열립니다.')">Play 스토어 (Android)</button>
+  </div>
+  <p class="text-xs mt-2.5" style="color: var(--muted);">설치 후 "Sign in" → 가입 이메일 입력 → 인증코드 입력. 알림 허용 필수.</p>
+
+  <h3 class="sub-h">Dropbox 모바일 앱 <span class="text-xs font-normal text-red-600 ml-1">필수</span></h3>
+  <div class="flex flex-wrap gap-2">
+    <button type="button" class="dl-btn qr-btn" onclick="showQR('https://apps.apple.com/app/dropbox/id327630330','Dropbox · iPhone','iPhone 카메라로 QR을 스캔하면 App Store가 열립니다.')">App Store (iPhone)</button>
+    <button type="button" class="dl-btn qr-btn" onclick="showQR('https://play.google.com/store/apps/details?id=com.dropbox.android','Dropbox · Android','Android 카메라로 QR을 스캔하면 Play 스토어가 열립니다.')">Play 스토어 (Android)</button>
+  </div>
+  <p class="text-xs mt-2.5" style="color: var(--muted);">회사 Dropbox 계정으로 로그인. 계정 없으면 이은상에게 생성 요청.</p>
+
+  <h3 class="sub-h">권장 초기 설정</h3>
+  <ul class="list-disc list-inside text-sm space-y-1 ml-1" style="color: var(--text);">
+    <li><strong>표시 이름을 한글 이름으로 설정</strong> — Slack 프로필 &gt; 프로필 편집 &gt; "표시 이름" 항목을 한글로. 영문 자동 설정 시 가독성 낮음</li>
+    <li><strong>모바일 알림 허용</strong> — iOS/Android 설정에서 Slack 앱 알림 ON. 출장 현장 알림을 놓치지 않음</li>
+  </ul>
 </section>
 
-<section id="signup" class="bg-gradient-to-b from-slate-100 to-slate-50 py-16">
-  <div class="max-w-2xl mx-auto px-6">
-    <div class="text-center mb-8">
-      <div class="inline-block px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-full mb-3">STEP 1</div>
-      <h2 class="text-3xl font-bold mb-3 text-slate-900">Slack 초대 요청</h2>
-      <p class="text-slate-600">회사 이메일을 제출해주세요. 수합 후 일괄로 Endorobotics Slack 워크스페이스에 초대됩니다.</p>
-    </div>
+<section>
+  <h2 class="sec-h"><span class="num-badge">3</span>Slack 사용법 및 출장기록 남기는 법</h2>
+  <p class="leading-relaxed" style="color: var(--text);">
+    처음 로그인하면 좌측 사이드바에서 채널을 조인하고 섹션으로 정리하는 것부터 시작입니다.
+    아래 스크린샷과 순서를 따라가면 출장 기록 남기기까지 한 번에 익힐 수 있습니다.
+  </p>
 
-    <div class="bg-white p-7 rounded-2xl border border-slate-200 shadow-sm">
-      <form class="space-y-4" action="mailto:eunsang.lee@endorobo.com?subject=[Trip%20Agent]%20Slack%20초대%20요청" method="post" enctype="text/plain">
-        <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-1.5">이름</label>
-          <input name="이름" type="text" required placeholder="홍길동" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-        </div>
-        <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-1.5">회사 이메일</label>
-          <input name="이메일" type="email" required placeholder="name@endorobo.com" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-        </div>
-        <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-1.5">소속·부서</label>
-          <input name="소속" type="text" required placeholder="예: 전략기획팀" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-        </div>
-        <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-1.5">다음 출장 일정 <span class="text-slate-400 font-normal">(선택)</span></label>
-          <input name="출장일정" type="text" placeholder="예: DDW 2026 (5월 1~7일)" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-        </div>
-        <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-sm">
-          이메일로 제출
-        </button>
-        <p class="text-xs text-slate-500 text-center leading-relaxed">
-          제출 시 메일 앱이 열립니다. 열린 메일에서 <span class="font-medium">"보내기"</span> 버튼을 눌러 전송해주세요.<br>
-          문의: <a href="mailto:eunsang.lee@endorobo.com" class="text-indigo-600 underline">eunsang.lee@endorobo.com</a>
-        </p>
-      </form>
-    </div>
+  <!-- 3-1 채널 조인 -->
+  <h3 class="sub-h">3-1. 모든 채널 조인하기</h3>
+  <p class="text-sm" style="color: var(--text);">Endorobotics 워크스페이스에는 아래 채널들이 있습니다. <strong>전부 조인</strong>해야 팀 공지·자료를 놓치지 않습니다.</p>
 
-    <div class="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-5">
-      <h4 class="font-semibold text-amber-900 mb-2 text-sm flex items-center gap-2">
-        <span>📬</span> 초대 메일을 받으면
-      </h4>
-      <ol class="text-sm text-amber-900 space-y-1.5 list-decimal list-inside">
-        <li>메일 본문의 <span class="font-medium">"Join Now"</span> 버튼 클릭 → Slack 가입</li>
-        <li><a href="https://slack.com/downloads" target="_blank" class="underline">Slack 앱</a> 모바일·데스크탑 설치 (권장)</li>
-        <li><code class="cmd">#출장일지</code> 채널로 입장 → 아래 <a href="#before" class="underline">출장 전 준비</a> 따라하기</li>
-      </ol>
-    </div>
-  </div>
-</section>
-
-<section id="before" class="max-w-4xl mx-auto px-6 py-16">
-  <div class="mb-10">
-    <div class="inline-block px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-full mb-3">STEP 2</div>
-    <h2 class="text-3xl font-bold mb-2 text-slate-900">출장 전 준비 (5분)</h2>
-    <p class="text-slate-600">떠나기 전 딱 세 가지만 확인하면 됩니다.</p>
+  <div class="overflow-x-auto border rounded-lg bg-white mt-3" style="border-color: var(--border);">
+    <table class="w-full border-collapse text-sm">
+      <thead>
+        <tr class="border-b border-slate-300">
+          <th class="text-left py-2 px-3 font-semibold bg-slate-50 w-1/4">섹션</th>
+          <th class="text-left py-2 px-3 font-semibold bg-slate-50">채널 이름</th>
+          <th class="text-left py-2 px-3 font-semibold bg-slate-50">용도</th>
+        </tr>
+      </thead>
+      <tbody style="color: var(--text);">
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top" rowspan="3">일반</td><td class="py-2 px-3"><code class="cmd">#slack-사용법</code></td><td class="py-2 px-3">Slack 자체 FAQ·팁</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3"><code class="cmd">#전체-잡담</code></td><td class="py-2 px-3">자유 대화</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3"><code class="cmd">#전체-공지</code></td><td class="py-2 px-3">회사 전체 공지</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top">품질시스템(QMS)</td><td class="py-2 px-3" colspan="2">품질·규제 관련 공유</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top" rowspan="4">최신동향</td><td class="py-2 px-3"><code class="cmd">#임상논문</code></td><td class="py-2 px-3">최신 임상 논문 공유</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3"><code class="cmd">#ai-공모전</code></td><td class="py-2 px-3">AI 활용 아이디어 모집</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3"><code class="cmd">#시장동향</code></td><td class="py-2 px-3">의료기기 시장·경쟁사 동향</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3"><code class="cmd">#기술논문</code></td><td class="py-2 px-3">기술·엔지니어링 논문</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top" rowspan="2">해외출장</td><td class="py-2 px-3"><code class="cmd">#출장일지</code> <span class="text-xs text-red-600 font-semibold">★ 필수</span></td><td class="py-2 px-3">출장 중 실시간 기록</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3"><code class="cmd">#학회강의</code></td><td class="py-2 px-3">학회 현장 강의 자료·요약 공유</td></tr>
+        <tr><td class="py-2 px-3 font-medium align-top">Agent 개발</td><td class="py-2 px-3"><code class="cmd">#리소스-관리</code> 🔒</td><td class="py-2 px-3">제한됨 (조인 불가 시 스킵)</td></tr>
+      </tbody>
+    </table>
   </div>
 
-  <ol class="space-y-7">
-    <li class="flex gap-5">
-      <div class="flex-shrink-0 w-10 h-10 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-bold">1</div>
-      <div>
-        <h3 class="font-bold text-lg mb-1.5 text-slate-900"><code class="cmd">#출장일지</code> 채널 입장</h3>
-        <p class="text-slate-600 text-sm leading-relaxed">Slack 좌측 사이드바 → 채널 섹션에서 <code class="cmd">#출장일지</code> 찾기. 없으면 상단 검색창에 입력 후 <span class="font-medium">Join</span>.</p>
-      </div>
-    </li>
-    <li class="flex gap-5">
-      <div class="flex-shrink-0 w-10 h-10 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-bold">2</div>
-      <div>
-        <h3 class="font-bold text-lg mb-1.5 text-slate-900">본인 출장 쓰레드 찾기</h3>
-        <p class="text-slate-600 text-sm leading-relaxed mb-2">각 출장마다 parent 메시지가 미리 올라와 있습니다. 형식:</p>
-        <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 font-mono text-sm text-slate-800">
-          YYMMDD-DD, {나라}, {행사명}
-        </div>
-        <p class="text-slate-500 text-xs mt-2">예시: <code class="cmd">260501-07, 미국, DDW 2026</code></p>
-      </div>
-    </li>
-    <li class="flex gap-5">
-      <div class="flex-shrink-0 w-10 h-10 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-bold">3</div>
-      <div>
-        <h3 class="font-bold text-lg mb-1.5 text-slate-900">Dropbox 모바일 앱 설치</h3>
-        <p class="text-slate-600 text-sm leading-relaxed">
-          <a href="https://www.dropbox.com/mobile" target="_blank" class="text-indigo-600 underline">Dropbox 앱</a>을 폰에 설치하고 <span class="font-medium">회사 계정</span>으로 로그인.
-          <code class="cmd">!대용량</code> 기능을 쓰려면 필수입니다.
-        </p>
-      </div>
-    </li>
+  <p class="text-sm mt-4 font-semibold">조인하는 법</p>
+  <ol class="list-decimal list-inside text-sm space-y-1 ml-1" style="color: var(--text);">
+    <li>좌측 사이드바 하단 <strong>"+ 채널 추가"</strong> 클릭</li>
+    <li><strong>"채널 찾아보기(Browse channels)"</strong> 선택 → 전체 채널 리스트 표시</li>
+    <li>위 표의 각 채널을 하나씩 클릭 → <strong>"참여(Join)"</strong> 버튼 클릭</li>
   </ol>
+
+  <figure class="screenshot" style="max-width: 360px;">
+    <div class="screenshot-wrap">
+      <img src="images/01-sidebar.png" alt="Slack 사이드바 채널 구조 예시">
+    </div>
+    <figcaption>완성된 사이드바 예시. <strong>해외출장</strong> 섹션의 <code class="cmd">#출장일지</code>가 반드시 보여야 하며, 하단 <strong>"채널 추가"</strong>는 새 채널 조인·섹션 생성 진입점.</figcaption>
+  </figure>
+
+  <!-- 3-2 섹션으로 정리 -->
+  <h3 class="sub-h">3-2. 섹션으로 정리하기 (선택 · 권장)</h3>
+  <p class="text-sm" style="color: var(--text);">기본적으로 채널은 일자순으로 나열됩니다. <strong>"섹션(Section)"</strong>으로 묶으면 사이드바가 위 스크린샷처럼 깔끔해집니다.</p>
+
+  <ol class="list-decimal list-inside text-sm space-y-1 ml-1 mt-3" style="color: var(--text);">
+    <li>사이드바 어떤 채널이든 <strong>오른쪽 클릭</strong> (모바일: 길게 누르기) → <strong>"섹션으로 이동"</strong> → <strong>"새 섹션 만들기"</strong></li>
+    <li>권장 섹션 이름: <code class="cmd">일반</code> · <code class="cmd">품질시스템(QMS)</code> · <code class="cmd">최신동향</code> · <code class="cmd">해외출장</code> · <code class="cmd">Agent 개발</code></li>
+    <li>각 채널을 해당 섹션으로 드래그 앤 드롭하여 정리</li>
+    <li>섹션 이름 옆 화살표(▸)로 접었다 펴기 가능</li>
+  </ol>
+
+  <!-- 3-3 출장 기록 -->
+  <h3 class="sub-h">3-3. 출장 기록 남기기</h3>
+  <p class="text-sm" style="color: var(--text);">
+    출장 기록은 전부 <code class="cmd">#출장일지</code> 채널 안에서 진행합니다.
+    <strong style="color: #dc2626;">명령어는 반드시 출장 쓰레드(댓글창) 안에서만 동작</strong>합니다. 채널 본문(root)에 쓰면 무시됩니다.
+  </p>
+
+  <p class="text-sm font-semibold mt-5">Step 1. <code class="cmd">#출장일지</code> 채널 입장</p>
+  <p class="text-sm mt-1" style="color: var(--text);">좌측 사이드바 <strong>해외출장</strong> 섹션 → <code class="cmd">#출장일지</code> 클릭. 봇(Trip Agent)이 올려둔 <strong>출장 제목 메시지</strong>들이 보입니다.</p>
+
+  <figure class="screenshot">
+    <div class="screenshot-wrap">
+      <img src="images/02-channel-entry.png" alt="출장일지 채널 진입 — 출장 제목 메시지들">
+    </div>
+    <figcaption>Trip Agent 봇이 올린 출장 제목 메시지 4개가 시간순으로 보입니다. 이 중 <strong>본인이 참가할 출장</strong>(예: <code class="cmd">260501-07, 미국, DDW 2026</code>)을 찾으세요.</figcaption>
+  </figure>
+
+  <p class="text-sm font-semibold mt-5">Step 2. 해당 메시지에 마우스를 올려 쓰레드 열기</p>
+  <p class="text-sm mt-1" style="color: var(--text);">메시지 위로 마우스를 가져가면 오른쪽에 아이콘들이 뜹니다. <strong>말풍선 모양(스레드의 댓글)</strong>을 클릭하면 오른쪽에 쓰레드 패널이 열립니다.</p>
+
+  <figure class="screenshot">
+    <div class="screenshot-wrap">
+      <img src="images/03-thread-icon.png" alt="스레드 아이콘 hover 상태">
+    </div>
+    <figcaption>메시지 hover 시 우측 상단에 아이콘 묶음이 나타납니다. 이 중 <strong>말풍선 모양</strong> (툴팁에 "스레드의 댓글"이라고 뜸)을 클릭하면 쓰레드 패널이 열립니다.</figcaption>
+  </figure>
+
+  <p class="text-sm font-semibold mt-5">Step 3. 쓰레드에 본인 기록 남기기</p>
+  <p class="text-sm mt-1" style="color: var(--text);">우측 패널의 <strong>"댓글 남기기..."</strong>에 텍스트·사진·영상을 올리세요.</p>
+
+  <figure class="screenshot">
+    <div class="screenshot-wrap">
+      <img src="images/04-thread-compose.png" alt="쓰레드 댓글 작성 패널">
+    </div>
+    <figcaption>오른쪽에 쓰레드 패널이 열리면, 하단 <strong>"댓글 남기기…" 입력창</strong>에 관찰 내용·사진·영상을 올립니다. 사진에는 반드시 한 줄 설명을 함께.</figcaption>
+  </figure>
+
+  <p class="text-sm font-semibold mt-5">Step 4. 대용량 영상 업로드 — <code class="cmd">!대용량</code></p>
+  <p class="text-sm mt-1" style="color: var(--text);">1GB 넘는 영상(수술 녹화·강의 풀영상 등)은 댓글란에 <code class="cmd">!대용량</code> 을 단독으로 입력해 전송합니다. 봇이 <strong>"드랍박스 앱 열기"</strong> 링크를 답장합니다.</p>
+
+  <figure class="screenshot">
+    <div class="screenshot-wrap">
+      <img src="images/05-daeyongryang-response.png" alt="대용량 명령어 응답 — Dropbox 앱 링크">
+    </div>
+    <figcaption>봇이 쓰레드 패널에 답장한 <strong>"드랍박스 앱 열기"</strong> 링크를 폰에서 탭하면 <strong>오늘 Day N 폴더</strong>가 자동으로 열립니다. 폴더의 <code class="cmd">+</code> 버튼으로 파일 업로드. 폰 잠그거나 앱 전환해도 백그라운드 업로드가 지속됩니다.</figcaption>
+  </figure>
+
+  <p class="text-sm font-semibold mt-5">Step 5. 하루 마무리 — <code class="cmd">!아카이브</code></p>
+  <p class="text-sm mt-1" style="color: var(--text);">저녁 피드백 미팅 직전에 같은 쓰레드에 <code class="cmd">!아카이브</code>를 입력합니다. 쓰레드 전체 댓글이 <code class="cmd">messages.md</code>로, 첨부 파일이 <strong>Day N 폴더</strong>로 동기화됩니다.</p>
+
+  <figure class="screenshot">
+    <div class="screenshot-wrap">
+      <img src="images/06-archive-command.png" alt="아카이브 명령어 입력 예시">
+    </div>
+    <figcaption>쓰레드 입력창에 <strong><code class="cmd">!아카이브</code>만 단독으로</strong> 입력 후 전송. 여러 번 실행해도 중복 없이 안전합니다.</figcaption>
+  </figure>
+
+  <!-- Do/Don't -->
+  <div class="mt-8 grid sm:grid-cols-2 gap-3">
+    <div class="border rounded-lg p-4 bg-white" style="border-color: var(--border);">
+      <div class="text-sm font-semibold mb-2" style="color: var(--brand);">✓ 잘 쓰는 법</div>
+      <ul class="text-xs space-y-1" style="color: var(--muted);">
+        <li>현장에서 10초 안에 올리기</li>
+        <li>사진엔 한 줄 설명 추가</li>
+        <li>"Saito 선생님이 말하길..." 출처 명시</li>
+        <li>본인 관점도 한 줄 덧붙이기</li>
+      </ul>
+    </div>
+    <div class="border border-red-200 rounded-lg p-4 bg-red-50">
+      <div class="text-sm font-semibold mb-2 text-red-700">✗ 피해야 할 것</div>
+      <ul class="text-xs space-y-1 text-red-800">
+        <li>개인 DM으로 메모 (팀이 못 봄)</li>
+        <li>"!대용량 부탁해요" (단독으로만)</li>
+        <li>채널 root에서 명령어</li>
+        <li>"나중에 정리하지"</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 3-4 학회 강의 기록 -->
+  <h3 class="sub-h">3-4. 학회 강의 기록 남기는 법</h3>
+  <p class="text-sm" style="color: var(--text);">
+    강의 기록은 <code class="cmd">#학회강의</code> 채널에서 진행합니다.
+    <strong>청자 1명 = 쓰레드 1개</strong>가 출장마다 미리 준비되어 있고
+    (예: <code class="cmd">260501-07, 미국, DDW 2026 @권태빈</code>),
+    본인 이름이 붙은 쓰레드 안에서 강의별로 <code class="cmd">!시작</code> ~ <code class="cmd">!끝</code> 을 감싸는 방식으로 기록합니다.
+    <strong style="color: #dc2626;">명령어는 반드시 쓰레드 댓글창에서만 동작</strong>합니다.
+  </p>
+
+  <p class="text-sm font-semibold mt-5">Step 1. 본인 이름이 붙은 쓰레드 찾기</p>
+  <p class="text-sm mt-1" style="color: var(--text);">좌측 사이드바 <strong>해외출장</strong> 섹션 → <code class="cmd">#학회강의</code>. Trip Agent 봇이 올려둔 쓰레드 제목 중 본인 이름(<code class="cmd">@이름</code>)이 붙은 메시지를 찾아 말풍선 아이콘을 클릭해 쓰레드를 엽니다.</p>
+
+  <p class="text-sm font-semibold mt-5">Step 2. 강의 시작 — <code class="cmd">!시작</code></p>
+  <p class="text-sm mt-1" style="color: var(--text);">강의가 시작되는 시점에 쓰레드 댓글창에 <code class="cmd">!시작</code>을 <strong>단독으로</strong> 입력·전송합니다. 봇이 드롭박스에 <strong>본인 이름 + 회차 번호</strong> 폴더를 자동 생성합니다 (예: <code class="cmd">권태빈_강의1</code>).</p>
+
+  <p class="text-sm font-semibold mt-5">Step 3. 실시간 기록</p>
+  <p class="text-sm mt-1" style="color: var(--text);">강의를 들으며 쓰레드에 자유롭게 메모를 쓰고, PPT 사진·짧은 음성 클립 등을 업로드하세요. 강의가 끝날 때 녹음 파일을 함께 올리면 됩니다 (1GB 이하).</p>
+
+  <p class="text-sm font-semibold mt-5">Step 4. 대용량 업로드 — <code class="cmd">!대용량</code> (선택)</p>
+  <p class="text-sm mt-1" style="color: var(--text);">녹음 파일이 1GB를 넘거나 풀영상을 올려야 할 때, 쓰레드에 <code class="cmd">!대용량</code>을 입력하면 봇이 <strong>해당 강의 폴더</strong>로 바로 이어지는 드롭박스 앱 링크를 답장합니다. 폰에서 탭 → 앱에서 백그라운드 업로드.</p>
+
+  <p class="text-sm font-semibold mt-5">Step 5. 강의 종료 — <code class="cmd">!끝</code></p>
+  <p class="text-sm mt-1" style="color: var(--text);"><code class="cmd">!시작</code>과 <code class="cmd">!끝</code> 사이의 모든 댓글·첨부파일이 강의 폴더로 자동 아카이브됩니다. 이후 같은 쓰레드에 <code class="cmd">!시작</code>을 다시 입력하면 <strong>강의2</strong>가 새로 열립니다.</p>
+
+  <div class="mt-6 border rounded-lg p-4 bg-white" style="border-color: var(--border);">
+    <div class="text-sm font-semibold mb-2" style="color: var(--brand);">📁 최종 폴더 구조</div>
+    <pre class="text-xs" style="color: var(--muted); font-family: ui-monospace, monospace;">260501-07, 미국, DDW 2026/
+├── 260501-1st Day/        ← #출장일지 기록
+├── 260502-2nd Day/
+├── ...
+└── 학회강의/
+    ├── 권태빈_강의1/       ← 같은 강의라도 청자별 독립
+    ├── 권태빈_강의2/
+    └── 최지영_강의1/</pre>
+  </div>
 </section>
 
-<section id="during" class="bg-slate-100 py-16">
-  <div class="max-w-4xl mx-auto px-6">
-    <div class="mb-10">
-      <div class="inline-block px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-full mb-3">STEP 3</div>
-      <h2 class="text-3xl font-bold mb-2 text-slate-900">출장 중 사용법</h2>
-      <p class="text-slate-600">명령어는 반드시 <span class="font-semibold">출장 쓰레드 안에서만</span> 동작합니다. 채널 root에서 쓰면 무시됩니다.</p>
+<section>
+  <h2 class="sec-h"><span class="num-badge" style="background:#64748b;">?</span>FAQ</h2>
+  <div class="border rounded-lg bg-white divide-y" style="border-color: var(--border);">
+    <details class="py-3 px-4">
+      <summary class="font-medium text-sm">Slack을 한 번도 써본 적이 없어도 괜찮나요?</summary>
+      <p class="text-sm mt-2 leading-relaxed" style="color: var(--muted);">이 페이지만 따라 하면 10분 안에 시작 가능합니다.</p>
+    </details>
+    <details class="py-3 px-4">
+      <summary class="font-medium text-sm">가입 버튼을 눌렀는데 "이 초대는 사용할 수 없습니다" 또는 도메인 오류가 떠요.</summary>
+      <p class="text-sm mt-2 leading-relaxed" style="color: var(--muted);">초대 링크는 유효기간이 있어 만료됐을 수 있습니다. 이은상에게 새 링크 요청. 또한 반드시 <code class="cmd">@endorobo.com</code> 회사 이메일로만 가입 가능합니다.</p>
+    </details>
+    <details class="py-3 px-4">
+      <summary class="font-medium text-sm">가입 인증 메일이 안 와요.</summary>
+      <p class="text-sm mt-2 leading-relaxed" style="color: var(--muted);">스팸함 확인 → <code class="cmd">no-reply@slack.com</code>. 10분 넘어도 안 오면 이은상에게 문의.</p>
+    </details>
+    <details class="py-3 px-4">
+      <summary class="font-medium text-sm">출장 중 Slack이 느리면?</summary>
+      <p class="text-sm mt-2 leading-relaxed" style="color: var(--muted);">모바일 데이터로 전환. 안 되면 <code class="cmd">!아카이브</code>는 나중에 몰아서 실행해도 OK.</p>
+    </details>
+    <details class="py-3 px-4">
+      <summary class="font-medium text-sm"><code class="cmd">!대용량</code> 링크가 앱으로 안 열려요.</summary>
+      <p class="text-sm mt-2 leading-relaxed" style="color: var(--muted);">Dropbox 모바일 앱 설치·로그인 확인. 미설치 시 웹으로 열림.</p>
+    </details>
+    <details class="py-3 px-4">
+      <summary class="font-medium text-sm">문제 생기면 누구한테?</summary>
+      <p class="text-sm mt-2 leading-relaxed" style="color: var(--muted);">이은상 매니저 (<a href="mailto:eunsang.lee@endorobo.com" class="link">eunsang.lee@endorobo.com</a>) 또는 Slack DM.</p>
+    </details>
+  </div>
+</section>
+
+</div> <!-- /tab slack -->
+
+<!-- =============================== -->
+<!-- Tab B: 출장 & 학회 (4, 7) -->
+<!-- =============================== -->
+<div class="tab-content" data-tab="trip" role="tabpanel">
+
+<section>
+  <h2 class="sec-h"><span class="num-badge">4</span>개인 준비물 체크</h2>
+  <p class="leading-relaxed" style="color: var(--text);">출장 2주 전·1주 전·전날로 나눠 점검. <strong>ESTA는 출국 최소 72시간 전</strong> 신청 권장.</p>
+
+  <h3 class="sub-h">여권 & 비자</h3>
+  <div class="overflow-x-auto border rounded-lg bg-white" style="border-color: var(--border);">
+    <table class="w-full border-collapse text-sm">
+      <thead>
+        <tr class="border-b border-slate-300">
+          <th class="text-left py-2 px-3 font-semibold bg-slate-50 w-1/4">항목</th>
+          <th class="text-left py-2 px-3 font-semibold bg-slate-50">DDW · Chicago</th>
+          <th class="text-left py-2 px-3 font-semibold bg-slate-50">ESGE · Milan</th>
+        </tr>
+      </thead>
+      <tbody style="color: var(--text);">
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium">여권 유효기간</td><td class="py-2 px-3">6개월 이상</td><td class="py-2 px-3">Schengen 출국일 +3개월 (6개월 권장)</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium">비자</td><td class="py-2 px-3">ESTA 필수 ($21)</td><td class="py-2 px-3">무비자 (Schengen 90일)</td></tr>
+        <tr><td class="py-2 px-3 font-medium">신청처</td><td class="py-2 px-3"><a href="https://esta.cbp.dhs.gov/" target="_blank" class="link">esta.cbp.dhs.gov</a></td><td class="py-2 px-3">해당 없음</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub-h">체크리스트</h3>
+  <div class="border rounded-lg bg-white p-5 text-sm space-y-4" style="border-color: var(--border); color: var(--text);">
+    <div>
+      <div class="font-semibold mb-2">항공 · 숙박 · 보험</div>
+      <ul class="space-y-1">
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>E-티켓 PDF 폰에 저장 (오프라인 열람)</span></label></li>
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>호텔 바우처·주소 스크린샷</span></label></li>
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>공항 → 호텔 이동 수단 확인</span></label></li>
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>해외출장자 보험 가입 확인 (인사팀)</span></label></li>
+      </ul>
     </div>
-
-    <div class="space-y-5">
-      <div class="bg-white p-6 rounded-xl border border-slate-200">
-        <div class="flex items-start gap-4 mb-3">
-          <div class="text-2xl">💬</div>
-          <div class="flex-1">
-            <h3 class="font-bold text-lg text-slate-900">기본 사용: 쓰레드에 기록 던지기</h3>
-            <p class="text-slate-600 text-sm mt-1">출장 쓰레드에 텍스트·사진·짧은 영상을 자유롭게. 저녁 피드백 미팅에서 이게 그대로 자료가 됩니다.</p>
-          </div>
-        </div>
-        <ul class="text-sm text-slate-700 space-y-1.5 ml-11">
-          <li>• 관찰한 제품·경쟁사·의사 코멘트</li>
-          <li>• 슬라이드·부스·세션 사진</li>
-          <li>• 짧은 영상 (Slack 기본 업로드 한계 1GB 이하)</li>
-        </ul>
-      </div>
-
-      <div class="bg-white p-6 rounded-xl border border-slate-200">
-        <div class="flex items-start gap-4 mb-4">
-          <div class="text-2xl">📤</div>
-          <div class="flex-1">
-            <h3 class="font-bold text-lg text-slate-900"><code class="cmd">!대용량</code> — 대용량 파일 업로드</h3>
-            <p class="text-slate-600 text-sm mt-1">1GB 넘는 영상(수술 녹화·강의 풀영상 등)에 사용.</p>
-          </div>
-        </div>
-        <div class="bg-slate-50 rounded-lg p-4 ml-11 text-sm space-y-2.5">
-          <div class="flex gap-3"><span class="font-bold text-indigo-600 w-4">1</span><span>출장 쓰레드 안에서 <code class="cmd">!대용량</code> 입력 후 전송</span></div>
-          <div class="flex gap-3"><span class="font-bold text-indigo-600 w-4">2</span><span>봇이 "<span class="underline">드랍박스 앱 열기</span>" 링크를 답장으로 줌</span></div>
-          <div class="flex gap-3"><span class="font-bold text-indigo-600 w-4">3</span><span>폰에서 그 링크 탭 → Dropbox 앱이 자동으로 오늘 Day N 폴더 열림</span></div>
-          <div class="flex gap-3"><span class="font-bold text-indigo-600 w-4">4</span><span>폴더 안 <code class="cmd">+</code> 버튼 → 파일 선택 → 업로드 시작</span></div>
-          <div class="flex gap-3"><span class="font-bold text-indigo-600 w-4">5</span><span>폰 잠그거나 앱 전환해도 백그라운드에서 업로드 계속</span></div>
-        </div>
-        <p class="text-slate-500 text-xs mt-3 ml-11 leading-relaxed">
-          업로드 완료 시 봇이 쓰레드에<br>
-          "<span class="font-medium">{본인}</span> 님이 <span class="font-medium">{Day N}</span>에 <code class="cmd">파일명.mp4</code> 업로드 완료" 알림을 돌려줍니다.
-        </p>
-      </div>
-
-      <div class="bg-white p-6 rounded-xl border border-slate-200">
-        <div class="flex items-start gap-4 mb-4">
-          <div class="text-2xl">🗂️</div>
-          <div class="flex-1">
-            <h3 class="font-bold text-lg text-slate-900"><code class="cmd">!아카이브</code> — 하루 마무리</h3>
-            <p class="text-slate-600 text-sm mt-1">하루 일정 끝에 쓰레드 내용을 Dropbox로 동기화. 저녁 피드백 미팅 전 실행 권장.</p>
-          </div>
-        </div>
-        <div class="bg-slate-50 rounded-lg p-4 ml-11 text-sm space-y-2">
-          <p>• 쓰레드 전체 댓글이 <code class="cmd">messages.md</code>로 정리되어 Day N 폴더에 저장</p>
-          <p>• 첨부 파일(사진·문서 등)도 동일 폴더로 업로드</p>
-          <p>• 여러 번 실행해도 중복 업로드 없음 (안전)</p>
-        </div>
-      </div>
+    <div>
+      <div class="font-semibold mb-2">결제</div>
+      <ul class="space-y-1">
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>해외 사용 가능 신용카드 + 카드사 해외 사용 통보</span></label></li>
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>USD 현금 $200~300 / EUR 현금 €100~200</span></label></li>
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>법인카드 한도 확인</span></label></li>
+      </ul>
     </div>
-
-    <div class="mt-10 bg-indigo-50 border border-indigo-200 rounded-xl p-5">
-      <h4 class="font-bold text-indigo-900 mb-2 flex items-center gap-2">
-        <span>🌙</span> 저녁 피드백 미팅
-      </h4>
-      <p class="text-sm text-indigo-900 leading-relaxed">
-        <code class="cmd">!아카이브</code> 이후 <code class="cmd">Day N/messages.md</code> 파일이 오늘의 기록을 구조화해줍니다.
-        팀 전원이 폴더 열고 미팅 시작 — 각자 올린 내용이 시간순으로 정리되어 있어 어젠다가 자동으로 잡힙니다.
-      </p>
+    <div>
+      <div class="font-semibold mb-2">전자기기 · 통신</div>
+      <ul class="space-y-1">
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>노트북·폰·충전기</span></label></li>
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>콘센트 어댑터 — 미국 Type A/B (110V), 이탈리아 Type C/F/L (220V)</span></label></li>
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>보조배터리 10,000mAh+ (학회장엔 콘센트 부족)</span></label></li>
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>데이터 로밍 or eSIM (Airalo, Nomad 등)</span></label></li>
+      </ul>
+    </div>
+    <div>
+      <div class="font-semibold mb-2">업무용품</div>
+      <ul class="space-y-1">
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>명함 200장+ (영문면 포함)</span></label></li>
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>제품 브로셔·One-pager (마케팅팀 수령)</span></label></li>
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>필기구·작은 노트</span></label></li>
+      </ul>
+    </div>
+    <div>
+      <div class="font-semibold mb-2">복장 · 기타</div>
+      <ul class="space-y-1">
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>Business casual 중심 (부스 스태프는 정장 or smart casual)</span></label></li>
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>편한 신발 (하루 2만보+)</span></label></li>
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>Chicago 5월 15~22℃, Milan 5월 15~23℃ — 재킷 1벌</span></label></li>
+        <li><label class="flex items-start gap-2 cursor-pointer"><input type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0"><span>상비약 (감기·진통·배탈·시차용)</span></label></li>
+      </ul>
     </div>
   </div>
 </section>
 
-<section id="tips" class="max-w-4xl mx-auto px-6 py-16">
-  <h2 class="text-3xl font-bold mb-2 text-slate-900">잘 쓰는 팁</h2>
-  <p class="text-slate-600 mb-8">이 팁만 지키면 출장 데이터 품질이 2배.</p>
+<section>
+  <h2 class="sec-h"><span class="num-badge">7</span>DDW 2026 · ESGE 2026 학회 안내</h2>
 
-  <div class="grid md:grid-cols-2 gap-4">
-    <div class="bg-green-50 border border-green-200 rounded-xl p-5">
-      <div class="font-bold text-green-900 mb-1.5 flex items-center gap-2"><span class="text-lg">✓</span> 현장에서 바로 올리기</div>
-      <p class="text-sm text-green-900/80">"나중에 정리해야지"는 실패 공식. 보고 들으면 10초 안에 스레드에 던지기.</p>
-    </div>
-    <div class="bg-green-50 border border-green-200 rounded-xl p-5">
-      <div class="font-bold text-green-900 mb-1.5 flex items-center gap-2"><span class="text-lg">✓</span> 사진엔 맥락 한 줄</div>
-      <p class="text-sm text-green-900/80">사진만 올리지 말고 "누가 발표하는 슬라이드" 같은 설명 함께. 저녁에 "이거 뭐였더라" 방지.</p>
-    </div>
-    <div class="bg-green-50 border border-green-200 rounded-xl p-5">
-      <div class="font-bold text-green-900 mb-1.5 flex items-center gap-2"><span class="text-lg">✓</span> 출처 명시</div>
-      <p class="text-sm text-green-900/80">"Saito 선생님이 말하길..." 식으로 누가 말한 내용인지 본문에 명시. 보고서 작성 시 인용이 쉬움.</p>
-    </div>
-    <div class="bg-green-50 border border-green-200 rounded-xl p-5">
-      <div class="font-bold text-green-900 mb-1.5 flex items-center gap-2"><span class="text-lg">✓</span> 본인 관점 추가</div>
-      <p class="text-sm text-green-900/80">관찰만 말고 "우리쪽 시사점은..." 한 줄 덧붙이기. 팀원들이 당신의 해석을 볼 수 있음.</p>
-    </div>
-    <div class="bg-red-50 border border-red-200 rounded-xl p-5">
-      <div class="font-bold text-red-900 mb-1.5 flex items-center gap-2"><span class="text-lg">✗</span> 개인 DM에 올리지 말기</div>
-      <p class="text-sm text-red-900/80">반드시 출장 쓰레드에. 개인 메모는 팀이 못 봅니다.</p>
-    </div>
-    <div class="bg-red-50 border border-red-200 rounded-xl p-5">
-      <div class="font-bold text-red-900 mb-1.5 flex items-center gap-2"><span class="text-lg">✗</span> 명령어 단독으로만</div>
-      <p class="text-sm text-red-900/80"><code class="cmd">!대용량</code>만 단독 전송. "!대용량 부탁해요" ❌ / "!대용량" ⭕</p>
-    </div>
+  <h3 class="sub-h">DDW 2026 (Digestive Disease Week)</h3>
+  <div class="border rounded-lg bg-white overflow-hidden" style="border-color: var(--border);">
+    <table class="w-full border-collapse text-sm">
+      <tbody style="color: var(--text);">
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium w-1/4 align-top bg-slate-50">일정</td><td class="py-2 px-3">2026년 5월 2-5일</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">장소</td><td class="py-2 px-3">McCormick Place (West Building), 2301 S King Dr, Chicago, IL 60616</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">규모</td><td class="py-2 px-3">13,000+ 전문가 · 400 세션 · 4,300 발표</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">주최</td><td class="py-2 px-3">AGA · AASLD · ASGE · SSAT 공동</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">Exhibit Hall</td><td class="py-2 px-3">5/3–5 · 09:30–16:00 CDT</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">공항 이동</td><td class="py-2 px-3">O'Hare(ORD) 택시 45분 / Blue Line 50분<br>Midway(MDW) 택시 25분 / Orange Line 35분</td></tr>
+        <tr><td class="py-2 px-3 font-medium align-top bg-slate-50">공식 링크</td><td class="py-2 px-3">
+          <div class="flex flex-wrap gap-2">
+            <a href="https://ddw2026.org/" target="_blank" class="dl-btn text-xs py-1">공식 웹사이트</a>
+            <a href="https://ddw.org/register/registration/" target="_blank" class="dl-btn text-xs py-1">등록</a>
+            <a href="https://ddw26.mapyourshow.com/8_0/floorplan/index.cfm" target="_blank" class="dl-btn text-xs py-1">Floor Plan</a>
+          </div>
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="mt-3 text-sm">
+    <div class="font-semibold">우리 팀 포커스 세션</div>
+    <p class="mt-1"><span class="todo">세션 ID · 시간 · 연자 · 관련 이유 채움 필요</span></p>
+  </div>
+
+  <h3 class="sub-h">ESGE Days 2026</h3>
+  <div class="border rounded-lg bg-white overflow-hidden" style="border-color: var(--border);">
+    <table class="w-full border-collapse text-sm">
+      <tbody style="color: var(--text);">
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium w-1/4 align-top bg-slate-50">일정</td><td class="py-2 px-3">5/13 Pre-Congress Course · 5/14–16 본회의<br>(hybrid, 7/31까지 streaming)</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">장소</td><td class="py-2 px-3">Allianz MiCo — Milano Convention Centre<br>Piazzale Carlo Magno 1, 20149 Milano</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">규모</td><td class="py-2 px-3">3,000+ 유럽 GI 전문가</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">호스트</td><td class="py-2 px-3">Humanitas University Medical School, Milan</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">공항 이동</td><td class="py-2 px-3">Malpensa(MXP) Express 기차 50분 + M1 10분<br>Linate(LIN) 73번 버스 또는 택시 20분</td></tr>
+        <tr><td class="py-2 px-3 font-medium align-top bg-slate-50">공식 링크</td><td class="py-2 px-3">
+          <div class="flex flex-wrap gap-2">
+            <a href="https://esgedays.org/" target="_blank" class="dl-btn text-xs py-1">공식 웹사이트</a>
+            <a href="https://esgedays.org/registration/registration" target="_blank" class="dl-btn text-xs py-1">등록</a>
+            <a href="https://esgedays.org/programme/session-descriptions" target="_blank" class="dl-btn text-xs py-1">세션 설명</a>
+          </div>
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="mt-3 text-sm">
+    <div class="font-semibold">우리 팀 포커스 세션</div>
+    <p class="mt-1"><span class="todo">세션 ID · 시간 · 연자 · 관련 이유 채움 필요</span></p>
+  </div>
+
+  <h3 class="sub-h">출장 관련 FAQ</h3>
+  <div class="border rounded-lg bg-white divide-y" style="border-color: var(--border);">
+    <details class="py-3 px-4">
+      <summary class="font-medium text-sm">ESTA 신청은 얼마나 걸리나요?</summary>
+      <p class="text-sm mt-2 leading-relaxed" style="color: var(--muted);">대개 72시간 내 승인. 간혹 더 걸리므로 출국 2주 전 신청 권장. $21.</p>
+    </details>
+    <details class="py-3 px-4">
+      <summary class="font-medium text-sm">미국→이탈리아 이동 시 비자는?</summary>
+      <p class="text-sm mt-2 leading-relaxed" style="color: var(--muted);">Schengen 무비자 90일 적용. ESTA는 미국 입국용이므로 DDW 전 반드시 승인 완료.</p>
+    </details>
   </div>
 </section>
 
-<section id="faq" class="bg-slate-100 py-16">
-  <div class="max-w-3xl mx-auto px-6">
-    <h2 class="text-3xl font-bold mb-8 text-slate-900 text-center">FAQ</h2>
-    <div class="space-y-3">
-      <details class="bg-white p-5 rounded-xl border border-slate-200 group">
-        <summary class="font-semibold cursor-pointer text-slate-900">초대 메일 받는 데 얼마나 걸리나요?</summary>
-        <p class="text-slate-600 text-sm mt-3 leading-relaxed">이메일 제출 후 보통 1영업일 내 발송됩니다. 이틀 넘도록 안 오면 스팸함 확인 후 이은상에게 DM 주세요.</p>
-      </details>
-      <details class="bg-white p-5 rounded-xl border border-slate-200 group">
-        <summary class="font-semibold cursor-pointer text-slate-900">출장 쓰레드는 누가 만드나요?</summary>
-        <p class="text-slate-600 text-sm mt-3 leading-relaxed">각 출장은 사전에 관리자가 parent 메시지를 올려둡니다. 팀원은 해당 쓰레드에 댓글로 참여만 하면 됩니다.</p>
-      </details>
-      <details class="bg-white p-5 rounded-xl border border-slate-200 group">
-        <summary class="font-semibold cursor-pointer text-slate-900">Dropbox 폴더 구조가 어떻게 되나요?</summary>
-        <p class="text-slate-600 text-sm mt-3 leading-relaxed"><code class="cmd">전략기획 / 400 시장분석 / 000 학회 자료 / {출장제목} / {Day N}</code><br>예: <code class="cmd">260501-1st Day</code>, <code class="cmd">260502-2nd Day</code>.</p>
-      </details>
-      <details class="bg-white p-5 rounded-xl border border-slate-200 group">
-        <summary class="font-semibold cursor-pointer text-slate-900"><code class="cmd">!대용량</code> 링크가 모바일에서 앱으로 안 열려요.</summary>
-        <p class="text-slate-600 text-sm mt-3 leading-relaxed">Dropbox 모바일 앱이 설치되어 있고 회사 계정으로 로그인된 상태여야 합니다. 미설치 시 웹페이지로 열리므로 반드시 앱 설치해주세요.</p>
-      </details>
-      <details class="bg-white p-5 rounded-xl border border-slate-200 group">
-        <summary class="font-semibold cursor-pointer text-slate-900">과거 출장 자료는 어디서 보나요?</summary>
-        <p class="text-slate-600 text-sm mt-3 leading-relaxed">Dropbox의 <code class="cmd">000 학회 자료</code> 폴더 하위에 모든 과거 출장이 연도·행사별로 남아있습니다. 팀 공유 폴더라 누구나 열람 가능.</p>
-      </details>
-      <details class="bg-white p-5 rounded-xl border border-slate-200 group">
-        <summary class="font-semibold cursor-pointer text-slate-900">출장 쓰레드에 올린 메시지를 수정·삭제할 수 있나요?</summary>
-        <p class="text-slate-600 text-sm mt-3 leading-relaxed">Slack 기본 기능으로 본인 메시지는 언제든 수정·삭제 가능. 단 <code class="cmd">!아카이브</code> 이미 실행된 내용은 Dropbox에도 반영되어 있으니, 수정 후 <code class="cmd">!아카이브</code> 다시 실행하면 Dropbox도 갱신됩니다.</p>
-      </details>
-      <details class="bg-white p-5 rounded-xl border border-slate-200 group">
-        <summary class="font-semibold cursor-pointer text-slate-900">문제 생기면 누구한테 물어보나요?</summary>
-        <p class="text-slate-600 text-sm mt-3 leading-relaxed">이은상 매니저 (<a href="mailto:eunsang.lee@endorobo.com" class="text-indigo-600 underline">eunsang.lee@endorobo.com</a>) 또는 Slack DM으로 문의.</p>
-      </details>
-    </div>
+</div> <!-- /tab trip -->
+
+<!-- =============================== -->
+<!-- Tab C: 회사 제품 (5) -->
+<!-- =============================== -->
+<div class="tab-content" data-tab="products" role="tabpanel">
+
+<section>
+  <h2 class="sec-h"><span class="num-badge">5</span>회사 제품 설명</h2>
+  <p class="leading-relaxed" style="color: var(--text);">부스 방문객·KOL과의 대화에서 설명해야 할 핵심 제품. 자세한 스펙은 마케팅팀 공식 자료 참고.</p>
+
+  <p class="text-sm mt-4"><span class="todo">채움 필요</span> 아래 제품 카드는 템플릿이며, 마케팅·제품팀의 공식 자료로 교체 예정.</p>
+
+  <h3 class="sub-h">EndoCup (Q-Bot)</h3>
+  <div class="border rounded-lg bg-white overflow-hidden" style="border-color: var(--border);">
+    <table class="w-full border-collapse text-sm">
+      <tbody style="color: var(--text);">
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium w-1/4 align-top bg-slate-50">카테고리</td><td class="py-2 px-3">Endoscopic attachment</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">주요 특장점</td><td class="py-2 px-3"><span class="todo">특장점 3가지 채우기</span></td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">경쟁 제품</td><td class="py-2 px-3"><span class="todo">경쟁 제품명 · 비교 포인트</span></td></tr>
+        <tr><td class="py-2 px-3 font-medium align-top bg-slate-50">데모 계획</td><td class="py-2 px-3"><span class="todo">DDW/ESGE 부스 데모 시간 등</span></td></tr>
+      </tbody>
+    </table>
   </div>
+
+  <h3 class="sub-h">Tracloser</h3>
+  <div class="border rounded-lg bg-white overflow-hidden" style="border-color: var(--border);">
+    <table class="w-full border-collapse text-sm">
+      <tbody style="color: var(--text);">
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium w-1/4 align-top bg-slate-50">카테고리</td><td class="py-2 px-3">Scope closure/fixation device</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">주요 특장점</td><td class="py-2 px-3"><span class="todo">특장점 3가지 채우기</span></td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">경쟁 제품</td><td class="py-2 px-3"><span class="todo">경쟁 제품명 · 비교 포인트</span></td></tr>
+        <tr><td class="py-2 px-3 font-medium align-top bg-slate-50">데모 계획</td><td class="py-2 px-3"><span class="todo">Tokyo Live의 "black Nichiban tape" 사례 참고</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub-h">추가 제품</h3>
+  <p class="text-sm" style="color: var(--muted);"><span class="todo">마케팅팀에 전체 제품 리스트 요청 → 여기에 추가</span></p>
+
+  <h3 class="sub-h">부스 영어 대응 팁</h3>
+  <ul class="list-disc list-inside text-sm space-y-1 ml-1" style="color: var(--text);">
+    <li>"Are you familiar with endoscopic ESD accessories?" 같은 오픈 질문으로 시작</li>
+    <li>제품을 직접 손에 쥐어주기 — 설명이 절반 짧아짐</li>
+    <li>상세 문의는 명함 교환 후 follow-up 이메일로 약속</li>
+  </ul>
 </section>
 
-<footer class="bg-white border-t border-slate-200 py-10">
-  <div class="max-w-5xl mx-auto px-6 text-center">
-    <div class="flex items-center justify-center gap-2.5 mb-3">
-      <div class="w-6 h-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-md flex items-center justify-center text-white text-[10px] font-bold">TA</div>
-      <span class="font-bold text-slate-700">Trip Agent</span>
-    </div>
-    <p class="text-sm text-slate-500">
-      Endorobotics · 해외출장 기록 자동화 ·
-      <a href="https://github.com/esl-0604/TripAgent" class="text-indigo-600 hover:underline">GitHub</a>
-    </p>
-    <p class="text-xs text-slate-400 mt-2">
-      문의: <a href="mailto:eunsang.lee@endorobo.com" class="underline">eunsang.lee@endorobo.com</a>
-    </p>
+</div> <!-- /tab products -->
+
+<!-- =============================== -->
+<!-- Tab D: KOL 리스트 (6) -->
+<!-- =============================== -->
+<div class="tab-content" data-tab="kol" role="tabpanel">
+
+<section>
+  <h2 class="sec-h"><span class="num-badge">6</span>KOL 리스트</h2>
+  <p class="leading-relaxed" style="color: var(--text);">학회 참가 예상 KOL. 과거 접점, 선호 장비, 관심 분야를 미리 파악.</p>
+
+  <h3 class="sub-h">과거 접점 KOL (Tokyo Live 2026 기록)</h3>
+  <div class="overflow-x-auto border rounded-lg bg-white" style="border-color: var(--border);">
+    <table class="w-full border-collapse text-sm">
+      <thead>
+        <tr class="border-b border-slate-300">
+          <th class="text-left py-2 px-3 font-semibold bg-slate-50">이름</th>
+          <th class="text-left py-2 px-3 font-semibold bg-slate-50">전문</th>
+          <th class="text-left py-2 px-3 font-semibold bg-slate-50">선호 장비</th>
+          <th class="text-left py-2 px-3 font-semibold bg-slate-50">우리 접점</th>
+        </tr>
+      </thead>
+      <tbody class="align-top" style="color: var(--text);">
+        <tr class="border-b border-slate-200">
+          <td class="py-2 px-3 font-medium">Saito sensei</td>
+          <td class="py-2 px-3">Gastric ESD (Live 연자)</td>
+          <td class="py-2 px-3">Dual knife 2.0 + IT2</td>
+          <td class="py-2 px-3">Traclosure 사용, 런천 시연</td>
+        </tr>
+        <tr class="border-b border-slate-200">
+          <td class="py-2 px-3 font-medium">Inoue sensei</td>
+          <td class="py-2 px-3">Endoscopy</td>
+          <td class="py-2 px-3">Olympus</td>
+          <td class="py-2 px-3">Tokyo Live 참석</td>
+        </tr>
+        <tr>
+          <td class="py-2 px-3 font-medium">Yamamoto sensei</td>
+          <td class="py-2 px-3">GI Endoscopy · JGES 신임 chief</td>
+          <td class="py-2 px-3">Fujifilm</td>
+          <td class="py-2 px-3">Tokyo Live 언급</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub-h">DDW 2026 예상 KOL</h3>
+  <p class="text-sm"><span class="todo">채움 필요</span> CRM·영업 기록에서 DDW 참가 예상 KOL 추출 — 이름·소속·전문분야·선호장비·과거 접점·이번 컨택 목적 순.</p>
+
+  <h3 class="sub-h">ESGE 2026 예상 KOL</h3>
+  <p class="text-sm" style="color: var(--text);">ESGE Days의 host는 Humanitas University (Milan). Alessandro Repici 교수팀 및 유럽 GI 내시경 KOL 참가 예상.</p>
+  <p class="text-sm mt-2"><span class="todo">구체 리스트 채움 필요</span></p>
+</section>
+
+</div> <!-- /tab kol -->
+
+<footer class="mt-16 py-8 border-t" style="border-color: var(--border);">
+  <div class="text-xs" style="color: var(--muted);">
+    <p class="font-medium" style="color: var(--text);">Endorobotics · DDW 2026 · ESGE Days 2026</p>
+    <p class="mt-1.5">문의: <a href="mailto:eunsang.lee@endorobo.com" class="link">eunsang.lee@endorobo.com</a></p>
   </div>
 </footer>
+
+</main>
+
+<!-- QR Modal -->
+<div id="qrModal" class="qr-modal hidden" onclick="if(event.target===this) closeQR()">
+  <div class="qr-modal-content">
+    <button type="button" class="qr-close" onclick="closeQR()" aria-label="닫기">×</button>
+    <h3 id="qrTitle">앱 다운로드</h3>
+    <p id="qrDesc">폰 카메라로 QR을 스캔하세요.</p>
+    <img id="qrImage" alt="QR Code" width="240" height="240">
+    <a id="qrDirectLink" href="#" target="_blank" class="dl-btn" style="width:100%; justify-content:center;">스토어 링크 바로 열기</a>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.tab-content');
+
+    function activate(name) {
+      tabs.forEach(btn => btn.setAttribute('aria-selected', btn.dataset.tab === name ? 'true' : 'false'));
+      panels.forEach(panel => panel.classList.toggle('active', panel.dataset.tab === name));
+      if (history.replaceState) history.replaceState(null, '', '#' + name);
+    }
+
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        activate(btn.dataset.tab);
+        const bar = document.querySelector('.tab-bar');
+        window.scrollTo({ top: bar.offsetTop - 80, behavior: 'smooth' });
+      });
+    });
+
+    const initial = (window.location.hash || '').replace('#', '');
+    if (['slack', 'trip', 'products', 'kol'].includes(initial)) activate(initial);
+  })();
+
+  function showQR(url, title, desc) {
+    document.getElementById('qrTitle').textContent = title;
+    document.getElementById('qrDesc').textContent = desc;
+    document.getElementById('qrImage').src = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' + encodeURIComponent(url);
+    document.getElementById('qrDirectLink').href = url;
+    document.getElementById('qrModal').classList.remove('hidden');
+  }
+  function closeQR() {
+    document.getElementById('qrModal').classList.add('hidden');
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeQR();
+  });
+</script>
 
 </body>
 </html>
