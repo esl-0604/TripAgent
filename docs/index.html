@@ -364,29 +364,50 @@
     <strong style="color: #dc2626;">명령어는 반드시 쓰레드 댓글창에서만 동작</strong>합니다.
   </p>
 
-  <p class="text-base font-semibold mt-6">Step 1. 본인 이름이 붙은 쓰레드 찾기</p>
-  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">좌측 사이드바 <strong>해외출장</strong> 섹션 → <code class="cmd">#학회강의</code>. Trip Agent 봇이 올려둔 쓰레드 제목 중 본인 이름(<code class="cmd">@이름</code>)이 붙은 메시지를 찾아 말풍선 아이콘을 클릭해 쓰레드를 엽니다.</p>
+  <p class="text-base font-semibold mt-6">Step 1. <code class="cmd">#학회강의</code> 채널 입장 후 본인 이름이 붙은 쓰레드 찾기</p>
+  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">좌측 사이드바 <strong>해외출장</strong> 섹션 → <code class="cmd">#학회강의</code> 클릭. Trip Agent 봇이 올려둔 쓰레드 중 <strong>본인 이름</strong>(<code class="cmd">@이름</code>)이 붙은 메시지를 찾아 말풍선 아이콘을 클릭해 쓰레드를 엽니다.</p>
+
+  <figure class="screenshot">
+    <div class="screenshot-wrap">
+      <img src="images/07-lecture-channel.png" alt="#학회강의 채널에 시드된 쓰레드 목록">
+    </div>
+    <figcaption>Trip Agent 봇이 올려둔 <strong>출장 × 청자 조합별 쓰레드</strong>가 보입니다 (DDW 권태빈/최지영, ESGE 권태빈/최지영 총 4개). 본인 이름이 붙은 쓰레드(예: <code class="cmd">260501-07, 미국, DDW 2026 @권태빈</code>)에서만 작업합니다.</figcaption>
+  </figure>
 
   <p class="text-base font-semibold mt-6">Step 2. 강의 시작 — <code class="cmd">!시작</code></p>
-  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">강의가 시작되는 시점에 쓰레드 댓글창에 <code class="cmd">!시작</code>을 <strong>단독으로</strong> 입력·전송합니다. 봇이 드롭박스에 <strong>본인 이름 + 회차 번호</strong> 폴더를 자동 생성합니다 (예: <code class="cmd">권태빈_강의1</code>).</p>
+  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">강의가 시작되는 시점에 쓰레드 댓글창에 <code class="cmd">!시작</code>을 <strong>단독으로</strong> 입력·전송합니다. 봇이 드롭박스에 <strong>본인 이름 + 회차 번호</strong> 폴더를 자동 생성하고, 이 시점부터 <code class="cmd">!끝</code> 입력 전까지의 모든 내용이 해당 폴더에 모입니다.</p>
+
+  <figure class="screenshot">
+    <div class="screenshot-wrap">
+      <img src="images/08-lecture-start.png" alt="!시작 명령어 응답 예시">
+    </div>
+    <figcaption>봇이 즉시 <strong>"권태빈 · 강의1 기록 시작"</strong> 과 함께 생성된 폴더명(<code class="cmd">학회강의/권태빈_강의1</code>)을 알려줍니다. 이 쓰레드의 모든 댓글·첨부파일이 <code class="cmd">!끝</code> 입력 시점에 이 폴더로 아카이브됩니다.</figcaption>
+  </figure>
 
   <p class="text-base font-semibold mt-6">Step 3. 실시간 기록</p>
-  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">강의를 들으며 쓰레드에 자유롭게 메모를 쓰고, PPT 사진·짧은 음성 클립 등을 업로드하세요. 강의가 끝날 때 녹음 파일을 함께 올리면 됩니다 (1GB 이하).</p>
+  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">강의를 들으며 쓰레드에 자유롭게 <strong>메모</strong>를 남기고, <strong>PPT 사진</strong>·짧은 음성 클립 등을 업로드하세요. 출처나 본인 관점도 한 줄 덧붙이면 나중에 보고서 작성 시 유용합니다.</p>
 
-  <p class="text-base font-semibold mt-6">Step 4. 대용량 업로드 — <code class="cmd">!대용량</code> (선택)</p>
-  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">녹음 파일이 1GB를 넘거나 풀영상을 올려야 할 때, 쓰레드에 <code class="cmd">!대용량</code>을 입력하면 봇이 <strong>해당 강의 폴더</strong>로 바로 이어지는 드롭박스 앱 링크를 답장합니다. 폰에서 탭 → 앱에서 백그라운드 업로드.</p>
+  <p class="text-base font-semibold mt-6">Step 4. 대용량 녹음 파일 업로드 — <code class="cmd">!대용량</code> (선택)</p>
+  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">녹음 파일이 1GB를 넘거나 풀영상을 올려야 할 때, 쓰레드에 <code class="cmd">!대용량</code>을 입력하면 봇이 <strong>해당 강의 폴더</strong>로 바로 이어지는 드롭박스 앱 링크를 답장합니다. 폰에서 탭 → 앱에서 백그라운드 업로드. (1GB 이하 파일은 슬랙에 그냥 첨부하면 자동으로 폴더로 옮겨집니다.)</p>
 
   <p class="text-base font-semibold mt-6">Step 5. 강의 종료 — <code class="cmd">!끝</code></p>
-  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);"><code class="cmd">!시작</code>과 <code class="cmd">!끝</code> 사이의 모든 댓글·첨부파일이 강의 폴더로 자동 아카이브됩니다. 이후 같은 쓰레드에 <code class="cmd">!시작</code>을 다시 입력하면 <strong>강의2</strong>가 새로 열립니다.</p>
+  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">강의가 끝나면 쓰레드에 <code class="cmd">!끝</code>을 <strong>단독으로</strong> 입력합니다. <code class="cmd">!시작</code>~<code class="cmd">!끝</code> 사이의 모든 댓글·첨부파일이 <code class="cmd">messages.md</code> + 원본 파일 형태로 강의 폴더에 자동 아카이브됩니다. 이후 같은 쓰레드에 <code class="cmd">!시작</code>을 다시 입력하면 <strong>강의2</strong>가 새로 열립니다.</p>
 
-  <div class="mt-6 border rounded-lg p-4 bg-white" style="border-color: var(--border);">
-    <div class="text-sm font-semibold mb-2" style="color: var(--brand);">📁 최종 폴더 구조</div>
-    <pre class="text-xs" style="color: var(--muted); font-family: ui-monospace, monospace;">260501-07, 미국, DDW 2026/
+  <figure class="screenshot">
+    <div class="screenshot-wrap">
+      <img src="images/09-lecture-session-full.png" alt="!시작부터 !끝까지 전체 세션 흐름">
+    </div>
+    <figcaption>한 강의의 전체 흐름. <strong>① 시작 알림</strong>(폴더 생성 확인) → <strong>② 청자의 실시간 메모</strong>(예: "강의 메모중") → <strong>③ 아카이브 완료 알림</strong>(<code class="cmd">✅</code> 메시지 개수·첨부 업로드 결과 요약). 이 세 가지가 한 쓰레드 안에서 자연스럽게 이어집니다.</figcaption>
+  </figure>
+
+  <div class="mt-8 border rounded-lg p-5 bg-white" style="border-color: var(--border);">
+    <div class="text-base font-semibold mb-3" style="color: var(--brand);">📁 최종 폴더 구조</div>
+    <pre class="text-sm" style="color: var(--text); font-family: ui-monospace, monospace; line-height: 1.7;">260501-07, 미국, DDW 2026/
 ├── 260501-1st Day/        ← #출장일지 기록
 ├── 260502-2nd Day/
 ├── ...
 └── 학회강의/
-    ├── 권태빈_강의1/       ← 같은 강의라도 청자별 독립
+    ├── 권태빈_강의1/       ← 같은 강의라도 청자별 독립 폴더
     ├── 권태빈_강의2/
     └── 최지영_강의1/</pre>
   </div>
