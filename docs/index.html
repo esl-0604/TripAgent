@@ -51,8 +51,9 @@
     .primary-btn:hover { background: var(--brand-hover); }
 
     /* Tabs */
-    .tab-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
-    @media (max-width: 640px) { .tab-bar { grid-template-columns: repeat(2, 1fr); } }
+    .tab-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; }
+    @media (max-width: 900px) { .tab-bar { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 520px) { .tab-bar { grid-template-columns: repeat(2, 1fr); } }
     .tab-btn { display: flex; flex-direction: column; gap: 0.25rem; padding: 0.875rem 1rem; background: white; border: 1px solid var(--border); border-radius: 8px; text-align: left; transition: all 0.12s; cursor: pointer; font-family: inherit; color: inherit; }
     .tab-btn:hover { border-color: #94a3b8; }
     .tab-btn[aria-selected="true"] { background: var(--brand); border-color: var(--brand); color: white; }
@@ -139,28 +140,109 @@
 
 <!-- Tab buttons -->
 <div class="tab-bar mb-8" role="tablist">
-  <button class="tab-btn" role="tab" aria-selected="true" data-tab="slack">
-    <div class="tab-label"><span class="tab-num">A</span>관련 Tool 셋업</div>
+  <button class="tab-btn" role="tab" aria-selected="true" data-tab="overview">
+    <div class="tab-label"><span class="tab-num">A</span>출장 & 학회 Overview</div>
+    <div class="tab-sub">전체 일정 · 학회 안내</div>
+  </button>
+  <button class="tab-btn" role="tab" aria-selected="false" data-tab="tools">
+    <div class="tab-label"><span class="tab-num">B</span>관련 Tool 셋업</div>
     <div class="tab-sub">가입 · 앱 설치 · 기록법</div>
   </button>
-  <button class="tab-btn" role="tab" aria-selected="false" data-tab="trip">
-    <div class="tab-label"><span class="tab-num">B</span>출장 & 학회</div>
-    <div class="tab-sub">준비물 · DDW · ESGE</div>
+  <button class="tab-btn" role="tab" aria-selected="false" data-tab="personal">
+    <div class="tab-label"><span class="tab-num">C</span>개인 체크리스트</div>
+    <div class="tab-sub">여권 · 비자 · 준비물</div>
   </button>
   <button class="tab-btn" role="tab" aria-selected="false" data-tab="products">
-    <div class="tab-label"><span class="tab-num">C</span>회사 제품</div>
+    <div class="tab-label"><span class="tab-num">D</span>제품 스크립트</div>
     <div class="tab-sub">EndoCup · Tracloser 등</div>
   </button>
   <button class="tab-btn" role="tab" aria-selected="false" data-tab="kol">
-    <div class="tab-label"><span class="tab-num">D</span>KOL 리스트</div>
+    <div class="tab-label"><span class="tab-num">E</span>KOL 리스트</div>
     <div class="tab-sub">과거 접점 · 예상 참가자</div>
   </button>
 </div>
 
 <!-- =============================== -->
-<!-- Tab A: Tool 셋업 (1, 2, 3) -->
+<!-- Tab A: 출장 & 학회 Overview -->
 <!-- =============================== -->
-<div class="tab-content active" data-tab="slack" role="tabpanel">
+<div class="tab-content active" data-tab="overview" role="tabpanel">
+
+<section>
+  <h2 class="sec-h"><span class="num-badge">1</span>전체 일정</h2>
+  <p class="leading-relaxed" style="color: var(--text);"><span class="todo">DDW 2026 → ESGE 2026 연속 출장 타임라인 · 주요 이벤트 · 이동 플랜 (채워 넣기)</span></p>
+</section>
+
+<section>
+  <h2 class="sec-h"><span class="num-badge">2</span>DDW 2026 · ESGE 2026 학회 안내</h2>
+
+  <h3 class="sub-h">DDW 2026 (Digestive Disease Week)</h3>
+  <div class="border rounded-lg bg-white overflow-hidden" style="border-color: var(--border);">
+    <table class="w-full border-collapse text-sm">
+      <tbody style="color: var(--text);">
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium w-1/4 align-top bg-slate-50">일정</td><td class="py-2 px-3">2026년 5월 2-5일</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">장소</td><td class="py-2 px-3">McCormick Place (West Building), 2301 S King Dr, Chicago, IL 60616</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">규모</td><td class="py-2 px-3">13,000+ 전문가 · 400 세션 · 4,300 발표</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">주최</td><td class="py-2 px-3">AGA · AASLD · ASGE · SSAT 공동</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">Exhibit Hall</td><td class="py-2 px-3">5/3–5 · 09:30–16:00 CDT</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">공항 이동</td><td class="py-2 px-3">O'Hare(ORD) 택시 45분 / Blue Line 50분<br>Midway(MDW) 택시 25분 / Orange Line 35분</td></tr>
+        <tr><td class="py-2 px-3 font-medium align-top bg-slate-50">공식 링크</td><td class="py-2 px-3">
+          <div class="flex flex-wrap gap-2">
+            <a href="https://ddw2026.org/" target="_blank" class="dl-btn text-xs py-1">공식 웹사이트</a>
+            <a href="https://ddw.org/register/registration/" target="_blank" class="dl-btn text-xs py-1">등록</a>
+            <a href="https://ddw26.mapyourshow.com/8_0/floorplan/index.cfm" target="_blank" class="dl-btn text-xs py-1">Floor Plan</a>
+          </div>
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="mt-3 text-sm">
+    <div class="font-semibold">우리 팀 포커스 세션</div>
+    <p class="mt-1"><span class="todo">세션 ID · 시간 · 연자 · 관련 이유 채움 필요</span></p>
+  </div>
+
+  <h3 class="sub-h">ESGE Days 2026</h3>
+  <div class="border rounded-lg bg-white overflow-hidden" style="border-color: var(--border);">
+    <table class="w-full border-collapse text-sm">
+      <tbody style="color: var(--text);">
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium w-1/4 align-top bg-slate-50">일정</td><td class="py-2 px-3">5/13 Pre-Congress Course · 5/14–16 본회의<br>(hybrid, 7/31까지 streaming)</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">장소</td><td class="py-2 px-3">Allianz MiCo — Milano Convention Centre<br>Piazzale Carlo Magno 1, 20149 Milano</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">규모</td><td class="py-2 px-3">3,000+ 유럽 GI 전문가</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">호스트</td><td class="py-2 px-3">Humanitas University Medical School, Milan</td></tr>
+        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">공항 이동</td><td class="py-2 px-3">Malpensa(MXP) Express 기차 50분 + M1 10분<br>Linate(LIN) 73번 버스 또는 택시 20분</td></tr>
+        <tr><td class="py-2 px-3 font-medium align-top bg-slate-50">공식 링크</td><td class="py-2 px-3">
+          <div class="flex flex-wrap gap-2">
+            <a href="https://esgedays.org/" target="_blank" class="dl-btn text-xs py-1">공식 웹사이트</a>
+            <a href="https://esgedays.org/registration/registration" target="_blank" class="dl-btn text-xs py-1">등록</a>
+            <a href="https://esgedays.org/programme/session-descriptions" target="_blank" class="dl-btn text-xs py-1">세션 설명</a>
+          </div>
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="mt-3 text-sm">
+    <div class="font-semibold">우리 팀 포커스 세션</div>
+    <p class="mt-1"><span class="todo">세션 ID · 시간 · 연자 · 관련 이유 채움 필요</span></p>
+  </div>
+
+  <h3 class="sub-h">출장 관련 FAQ</h3>
+  <div class="border rounded-lg bg-white divide-y" style="border-color: var(--border);">
+    <details class="py-3 px-4">
+      <summary class="font-medium text-sm">ESTA 신청은 얼마나 걸리나요?</summary>
+      <p class="text-sm mt-2 leading-relaxed" style="color: var(--muted);">대개 72시간 내 승인. 간혹 더 걸리므로 출국 2주 전 신청 권장. $21.</p>
+    </details>
+    <details class="py-3 px-4">
+      <summary class="font-medium text-sm">미국→이탈리아 이동 시 비자는?</summary>
+      <p class="text-sm mt-2 leading-relaxed" style="color: var(--muted);">Schengen 무비자 90일 적용. ESTA는 미국 입국용이므로 DDW 전 반드시 승인 완료.</p>
+    </details>
+  </div>
+</section>
+
+</div> <!-- /tab overview -->
+
+<!-- =============================== -->
+<!-- Tab B: 관련 Tool 셋업 (1, 2, 3) -->
+<!-- =============================== -->
+<div class="tab-content" data-tab="tools" role="tabpanel">
 
 <section>
   <h2 class="sec-h"><span class="num-badge">1</span>Slack 가입 & 워크스페이스 초대</h2>
@@ -443,15 +525,15 @@
   </div>
 </section>
 
-</div> <!-- /tab slack -->
+</div> <!-- /tab tools -->
 
 <!-- =============================== -->
-<!-- Tab B: 출장 & 학회 (4, 7) -->
+<!-- Tab C: 개인 체크리스트 -->
 <!-- =============================== -->
-<div class="tab-content" data-tab="trip" role="tabpanel">
+<div class="tab-content" data-tab="personal" role="tabpanel">
 
 <section>
-  <h2 class="sec-h"><span class="num-badge">4</span>개인 준비물 체크</h2>
+  <h2 class="sec-h"><span class="num-badge">1</span>개인 준비물 체크</h2>
   <p class="leading-relaxed" style="color: var(--text);">출장 2주 전·1주 전·전날로 나눠 점검. <strong>ESTA는 출국 최소 72시간 전</strong> 신청 권장.</p>
 
   <h3 class="sub-h">여권 & 비자</h3>
@@ -520,80 +602,15 @@
   </div>
 </section>
 
-<section>
-  <h2 class="sec-h"><span class="num-badge">7</span>DDW 2026 · ESGE 2026 학회 안내</h2>
-
-  <h3 class="sub-h">DDW 2026 (Digestive Disease Week)</h3>
-  <div class="border rounded-lg bg-white overflow-hidden" style="border-color: var(--border);">
-    <table class="w-full border-collapse text-sm">
-      <tbody style="color: var(--text);">
-        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium w-1/4 align-top bg-slate-50">일정</td><td class="py-2 px-3">2026년 5월 2-5일</td></tr>
-        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">장소</td><td class="py-2 px-3">McCormick Place (West Building), 2301 S King Dr, Chicago, IL 60616</td></tr>
-        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">규모</td><td class="py-2 px-3">13,000+ 전문가 · 400 세션 · 4,300 발표</td></tr>
-        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">주최</td><td class="py-2 px-3">AGA · AASLD · ASGE · SSAT 공동</td></tr>
-        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">Exhibit Hall</td><td class="py-2 px-3">5/3–5 · 09:30–16:00 CDT</td></tr>
-        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">공항 이동</td><td class="py-2 px-3">O'Hare(ORD) 택시 45분 / Blue Line 50분<br>Midway(MDW) 택시 25분 / Orange Line 35분</td></tr>
-        <tr><td class="py-2 px-3 font-medium align-top bg-slate-50">공식 링크</td><td class="py-2 px-3">
-          <div class="flex flex-wrap gap-2">
-            <a href="https://ddw2026.org/" target="_blank" class="dl-btn text-xs py-1">공식 웹사이트</a>
-            <a href="https://ddw.org/register/registration/" target="_blank" class="dl-btn text-xs py-1">등록</a>
-            <a href="https://ddw26.mapyourshow.com/8_0/floorplan/index.cfm" target="_blank" class="dl-btn text-xs py-1">Floor Plan</a>
-          </div>
-        </td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="mt-3 text-sm">
-    <div class="font-semibold">우리 팀 포커스 세션</div>
-    <p class="mt-1"><span class="todo">세션 ID · 시간 · 연자 · 관련 이유 채움 필요</span></p>
-  </div>
-
-  <h3 class="sub-h">ESGE Days 2026</h3>
-  <div class="border rounded-lg bg-white overflow-hidden" style="border-color: var(--border);">
-    <table class="w-full border-collapse text-sm">
-      <tbody style="color: var(--text);">
-        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium w-1/4 align-top bg-slate-50">일정</td><td class="py-2 px-3">5/13 Pre-Congress Course · 5/14–16 본회의<br>(hybrid, 7/31까지 streaming)</td></tr>
-        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">장소</td><td class="py-2 px-3">Allianz MiCo — Milano Convention Centre<br>Piazzale Carlo Magno 1, 20149 Milano</td></tr>
-        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">규모</td><td class="py-2 px-3">3,000+ 유럽 GI 전문가</td></tr>
-        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">호스트</td><td class="py-2 px-3">Humanitas University Medical School, Milan</td></tr>
-        <tr class="border-b border-slate-200"><td class="py-2 px-3 font-medium align-top bg-slate-50">공항 이동</td><td class="py-2 px-3">Malpensa(MXP) Express 기차 50분 + M1 10분<br>Linate(LIN) 73번 버스 또는 택시 20분</td></tr>
-        <tr><td class="py-2 px-3 font-medium align-top bg-slate-50">공식 링크</td><td class="py-2 px-3">
-          <div class="flex flex-wrap gap-2">
-            <a href="https://esgedays.org/" target="_blank" class="dl-btn text-xs py-1">공식 웹사이트</a>
-            <a href="https://esgedays.org/registration/registration" target="_blank" class="dl-btn text-xs py-1">등록</a>
-            <a href="https://esgedays.org/programme/session-descriptions" target="_blank" class="dl-btn text-xs py-1">세션 설명</a>
-          </div>
-        </td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="mt-3 text-sm">
-    <div class="font-semibold">우리 팀 포커스 세션</div>
-    <p class="mt-1"><span class="todo">세션 ID · 시간 · 연자 · 관련 이유 채움 필요</span></p>
-  </div>
-
-  <h3 class="sub-h">출장 관련 FAQ</h3>
-  <div class="border rounded-lg bg-white divide-y" style="border-color: var(--border);">
-    <details class="py-3 px-4">
-      <summary class="font-medium text-sm">ESTA 신청은 얼마나 걸리나요?</summary>
-      <p class="text-sm mt-2 leading-relaxed" style="color: var(--muted);">대개 72시간 내 승인. 간혹 더 걸리므로 출국 2주 전 신청 권장. $21.</p>
-    </details>
-    <details class="py-3 px-4">
-      <summary class="font-medium text-sm">미국→이탈리아 이동 시 비자는?</summary>
-      <p class="text-sm mt-2 leading-relaxed" style="color: var(--muted);">Schengen 무비자 90일 적용. ESTA는 미국 입국용이므로 DDW 전 반드시 승인 완료.</p>
-    </details>
-  </div>
-</section>
-
-</div> <!-- /tab trip -->
+</div> <!-- /tab personal -->
 
 <!-- =============================== -->
-<!-- Tab C: 회사 제품 (5) -->
+<!-- Tab D: 제품 스크립트 -->
 <!-- =============================== -->
 <div class="tab-content" data-tab="products" role="tabpanel">
 
 <section>
-  <h2 class="sec-h"><span class="num-badge">5</span>회사 제품 설명</h2>
+  <h2 class="sec-h"><span class="num-badge">1</span>제품 스크립트</h2>
   <p class="leading-relaxed" style="color: var(--text);">부스 방문객·KOL과의 대화에서 설명해야 할 핵심 제품. 자세한 스펙은 마케팅팀 공식 자료 참고.</p>
 
   <p class="text-sm mt-4"><span class="todo">채움 필요</span> 아래 제품 카드는 템플릿이며, 마케팅·제품팀의 공식 자료로 교체 예정.</p>
@@ -636,12 +653,12 @@
 </div> <!-- /tab products -->
 
 <!-- =============================== -->
-<!-- Tab D: KOL 리스트 (6) -->
+<!-- Tab E: KOL 리스트 -->
 <!-- =============================== -->
 <div class="tab-content" data-tab="kol" role="tabpanel">
 
 <section>
-  <h2 class="sec-h"><span class="num-badge">6</span>KOL 리스트</h2>
+  <h2 class="sec-h"><span class="num-badge">1</span>KOL 리스트</h2>
   <p class="leading-relaxed" style="color: var(--text);">학회 참가 예상 KOL. 과거 접점, 선호 장비, 관심 분야를 미리 파악.</p>
 
   <h3 class="sub-h">과거 접점 KOL (Tokyo Live 2026 기록)</h3>
@@ -728,7 +745,7 @@
     });
 
     const initial = (window.location.hash || '').replace('#', '');
-    if (['slack', 'trip', 'products', 'kol'].includes(initial)) activate(initial);
+    if (['overview', 'tools', 'personal', 'products', 'kol'].includes(initial)) activate(initial);
   })();
 
   function showQR(url, title, desc) {
