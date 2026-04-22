@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trip Agent 온보딩 · Endorobotics</title>
+  <meta name="description" content="출장 중 팀원 기록을 Slack과 Dropbox에 자동 정리하는 Trip Agent 봇 사용 가이드.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', 'Noto Sans KR', -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    .cmd { background: #1e293b; color: #e2e8f0; padding: 0.12em 0.45em; border-radius: 4px; font-family: ui-monospace, SFMono-Regular, monospace; font-size: 0.9em; white-space: nowrap; }
+    .hero-gradient { background: radial-gradient(ellipse at top, rgba(99,102,241,0.15), transparent 60%), radial-gradient(ellipse at bottom right, rgba(168,85,247,0.12), transparent 60%); }
+    details[open] > summary::after { transform: rotate(180deg); }
+    details > summary::after { content: '▾'; float: right; transition: transform 0.2s; color: #94a3b8; }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+<nav class="bg-white/80 backdrop-blur border-b border-slate-200 sticky top-0 z-20">
+  <div class="max-w-5xl mx-auto px-6 py-3.5 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <div class="w-7 h-7 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-md flex items-center justify-center text-white text-xs font-bold">TA</div>
+      <span class="font-bold">Trip Agent</span>
+    </div>
+    <div class="hidden md:flex gap-5 text-sm text-slate-600">
+      <a href="#signup" class="hover:text-indigo-600 font-medium">초대 요청</a>
+      <a href="#before" class="hover:text-indigo-600">출장 전</a>
+      <a href="#during" class="hover:text-indigo-600">출장 중</a>
+      <a href="#tips" class="hover:text-indigo-600">잘 쓰는 팁</a>
+      <a href="#faq" class="hover:text-indigo-600">FAQ</a>
+    </div>
+    <a href="#signup" class="md:hidden bg-indigo-600 text-white text-sm px-3 py-1.5 rounded font-medium">초대받기</a>
+  </div>
+</nav>
+
+<section class="hero-gradient">
+  <div class="max-w-4xl mx-auto px-6 pt-20 pb-16 text-center">
+    <div class="inline-block px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-full mb-5">Endorobotics 해외출장 공식 툴</div>
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-5 tracking-tight text-slate-900">
+      출장, 혼자 적지 말고<br class="hidden sm:inline"> 팀으로 기록하자
+    </h1>
+    <p class="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+      Trip Agent는 학회·출장 중 팀원 각자가 수집한 관찰·사진·영상을
+      Slack 쓰레드와 Dropbox에 자동으로 정리하는 봇입니다.
+      매일 저녁 피드백 미팅과 출장보고서 작성이 즉시 가능해집니다.
+    </p>
+    <div class="mt-9 flex flex-col sm:flex-row gap-3 justify-center">
+      <a href="#signup" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-sm">
+        Slack 초대 요청하기 →
+      </a>
+      <a href="#during" class="border border-slate-300 bg-white text-slate-700 px-6 py-3 rounded-lg font-medium hover:bg-slate-50 transition">
+        사용법 먼저 보기
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="max-w-5xl mx-auto px-6 py-14">
+  <div class="grid md:grid-cols-3 gap-5">
+    <div class="bg-white p-6 rounded-xl border border-slate-200">
+      <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-4 text-xl">📱</div>
+      <h3 class="font-bold mb-2 text-slate-900">현장에서 바로 기록</h3>
+      <p class="text-sm text-slate-600 leading-relaxed">본 것·들은 것을 Slack 스레드에 10초만에 던지기. 나중에 정리 불필요.</p>
+    </div>
+    <div class="bg-white p-6 rounded-xl border border-slate-200">
+      <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-4 text-xl">🗂️</div>
+      <h3 class="font-bold mb-2 text-slate-900">Dropbox 자동 정리</h3>
+      <p class="text-sm text-slate-600 leading-relaxed">하루 끝에 <code class="cmd">!아카이브</code> 한 번. 댓글·사진이 날짜별 폴더로 동기화.</p>
+    </div>
+    <div class="bg-white p-6 rounded-xl border border-slate-200">
+      <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-4 text-xl">🎥</div>
+      <h3 class="font-bold mb-2 text-slate-900">대용량 영상도 편하게</h3>
+      <p class="text-sm text-slate-600 leading-relaxed"><code class="cmd">!대용량</code>으로 Dropbox 앱 링크 받기. 1GB+ 영상도 백그라운드 업로드.</p>
+    </div>
+  </div>
+</section>
+
+<section id="signup" class="bg-gradient-to-b from-slate-100 to-slate-50 py-16">
+  <div class="max-w-2xl mx-auto px-6">
+    <div class="text-center mb-8">
+      <div class="inline-block px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-full mb-3">STEP 1</div>
+      <h2 class="text-3xl font-bold mb-3 text-slate-900">Slack 초대 요청</h2>
+      <p class="text-slate-600">회사 이메일을 제출해주세요. 수합 후 일괄로 Endorobotics Slack 워크스페이스에 초대됩니다.</p>
+    </div>
+
+    <div class="bg-white p-7 rounded-2xl border border-slate-200 shadow-sm">
+      <form class="space-y-4" action="mailto:eunsang.lee@endorobo.com?subject=[Trip%20Agent]%20Slack%20초대%20요청" method="post" enctype="text/plain">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">이름</label>
+          <input name="이름" type="text" required placeholder="홍길동" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">회사 이메일</label>
+          <input name="이메일" type="email" required placeholder="name@endorobo.com" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">소속·부서</label>
+          <input name="소속" type="text" required placeholder="예: 전략기획팀" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">다음 출장 일정 <span class="text-slate-400 font-normal">(선택)</span></label>
+          <input name="출장일정" type="text" placeholder="예: DDW 2026 (5월 1~7일)" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+        </div>
+        <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-sm">
+          이메일로 제출
+        </button>
+        <p class="text-xs text-slate-500 text-center leading-relaxed">
+          제출 시 메일 앱이 열립니다. 열린 메일에서 <span class="font-medium">"보내기"</span> 버튼을 눌러 전송해주세요.<br>
+          문의: <a href="mailto:eunsang.lee@endorobo.com" class="text-indigo-600 underline">eunsang.lee@endorobo.com</a>
+        </p>
+      </form>
+    </div>
+
+    <div class="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-5">
+      <h4 class="font-semibold text-amber-900 mb-2 text-sm flex items-center gap-2">
+        <span>📬</span> 초대 메일을 받으면
+      </h4>
+      <ol class="text-sm text-amber-900 space-y-1.5 list-decimal list-inside">
+        <li>메일 본문의 <span class="font-medium">"Join Now"</span> 버튼 클릭 → Slack 가입</li>
+        <li><a href="https://slack.com/downloads" target="_blank" class="underline">Slack 앱</a> 모바일·데스크탑 설치 (권장)</li>
+        <li><code class="cmd">#출장일지</code> 채널로 입장 → 아래 <a href="#before" class="underline">출장 전 준비</a> 따라하기</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section id="before" class="max-w-4xl mx-auto px-6 py-16">
+  <div class="mb-10">
+    <div class="inline-block px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-full mb-3">STEP 2</div>
+    <h2 class="text-3xl font-bold mb-2 text-slate-900">출장 전 준비 (5분)</h2>
+    <p class="text-slate-600">떠나기 전 딱 세 가지만 확인하면 됩니다.</p>
+  </div>
+
+  <ol class="space-y-7">
+    <li class="flex gap-5">
+      <div class="flex-shrink-0 w-10 h-10 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-bold">1</div>
+      <div>
+        <h3 class="font-bold text-lg mb-1.5 text-slate-900"><code class="cmd">#출장일지</code> 채널 입장</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">Slack 좌측 사이드바 → 채널 섹션에서 <code class="cmd">#출장일지</code> 찾기. 없으면 상단 검색창에 입력 후 <span class="font-medium">Join</span>.</p>
+      </div>
+    </li>
+    <li class="flex gap-5">
+      <div class="flex-shrink-0 w-10 h-10 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-bold">2</div>
+      <div>
+        <h3 class="font-bold text-lg mb-1.5 text-slate-900">본인 출장 쓰레드 찾기</h3>
+        <p class="text-slate-600 text-sm leading-relaxed mb-2">각 출장마다 parent 메시지가 미리 올라와 있습니다. 형식:</p>
+        <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 font-mono text-sm text-slate-800">
+          YYMMDD-DD, {나라}, {행사명}
+        </div>
+        <p class="text-slate-500 text-xs mt-2">예시: <code class="cmd">260501-07, 미국, DDW 2026</code></p>
+      </div>
+    </li>
+    <li class="flex gap-5">
+      <div class="flex-shrink-0 w-10 h-10 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-bold">3</div>
+      <div>
+        <h3 class="font-bold text-lg mb-1.5 text-slate-900">Dropbox 모바일 앱 설치</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          <a href="https://www.dropbox.com/mobile" target="_blank" class="text-indigo-600 underline">Dropbox 앱</a>을 폰에 설치하고 <span class="font-medium">회사 계정</span>으로 로그인.
+          <code class="cmd">!대용량</code> 기능을 쓰려면 필수입니다.
+        </p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section id="during" class="bg-slate-100 py-16">
+  <div class="max-w-4xl mx-auto px-6">
+    <div class="mb-10">
+      <div class="inline-block px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-full mb-3">STEP 3</div>
+      <h2 class="text-3xl font-bold mb-2 text-slate-900">출장 중 사용법</h2>
+      <p class="text-slate-600">명령어는 반드시 <span class="font-semibold">출장 쓰레드 안에서만</span> 동작합니다. 채널 root에서 쓰면 무시됩니다.</p>
+    </div>
+
+    <div class="space-y-5">
+      <div class="bg-white p-6 rounded-xl border border-slate-200">
+        <div class="flex items-start gap-4 mb-3">
+          <div class="text-2xl">💬</div>
+          <div class="flex-1">
+            <h3 class="font-bold text-lg text-slate-900">기본 사용: 쓰레드에 기록 던지기</h3>
+            <p class="text-slate-600 text-sm mt-1">출장 쓰레드에 텍스트·사진·짧은 영상을 자유롭게. 저녁 피드백 미팅에서 이게 그대로 자료가 됩니다.</p>
+          </div>
+        </div>
+        <ul class="text-sm text-slate-700 space-y-1.5 ml-11">
+          <li>• 관찰한 제품·경쟁사·의사 코멘트</li>
+          <li>• 슬라이드·부스·세션 사진</li>
+          <li>• 짧은 영상 (Slack 기본 업로드 한계 1GB 이하)</li>
+        </ul>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl border border-slate-200">
+        <div class="flex items-start gap-4 mb-4">
+          <div class="text-2xl">📤</div>
+          <div class="flex-1">
+            <h3 class="font-bold text-lg text-slate-900"><code class="cmd">!대용량</code> — 대용량 파일 업로드</h3>
+            <p class="text-slate-600 text-sm mt-1">1GB 넘는 영상(수술 녹화·강의 풀영상 등)에 사용.</p>
+          </div>
+        </div>
+        <div class="bg-slate-50 rounded-lg p-4 ml-11 text-sm space-y-2.5">
+          <div class="flex gap-3"><span class="font-bold text-indigo-600 w-4">1</span><span>출장 쓰레드 안에서 <code class="cmd">!대용량</code> 입력 후 전송</span></div>
+          <div class="flex gap-3"><span class="font-bold text-indigo-600 w-4">2</span><span>봇이 "<span class="underline">드랍박스 앱 열기</span>" 링크를 답장으로 줌</span></div>
+          <div class="flex gap-3"><span class="font-bold text-indigo-600 w-4">3</span><span>폰에서 그 링크 탭 → Dropbox 앱이 자동으로 오늘 Day N 폴더 열림</span></div>
+          <div class="flex gap-3"><span class="font-bold text-indigo-600 w-4">4</span><span>폴더 안 <code class="cmd">+</code> 버튼 → 파일 선택 → 업로드 시작</span></div>
+          <div class="flex gap-3"><span class="font-bold text-indigo-600 w-4">5</span><span>폰 잠그거나 앱 전환해도 백그라운드에서 업로드 계속</span></div>
+        </div>
+        <p class="text-slate-500 text-xs mt-3 ml-11 leading-relaxed">
+          업로드 완료 시 봇이 쓰레드에<br>
+          "<span class="font-medium">{본인}</span> 님이 <span class="font-medium">{Day N}</span>에 <code class="cmd">파일명.mp4</code> 업로드 완료" 알림을 돌려줍니다.
+        </p>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl border border-slate-200">
+        <div class="flex items-start gap-4 mb-4">
+          <div class="text-2xl">🗂️</div>
+          <div class="flex-1">
+            <h3 class="font-bold text-lg text-slate-900"><code class="cmd">!아카이브</code> — 하루 마무리</h3>
+            <p class="text-slate-600 text-sm mt-1">하루 일정 끝에 쓰레드 내용을 Dropbox로 동기화. 저녁 피드백 미팅 전 실행 권장.</p>
+          </div>
+        </div>
+        <div class="bg-slate-50 rounded-lg p-4 ml-11 text-sm space-y-2">
+          <p>• 쓰레드 전체 댓글이 <code class="cmd">messages.md</code>로 정리되어 Day N 폴더에 저장</p>
+          <p>• 첨부 파일(사진·문서 등)도 동일 폴더로 업로드</p>
+          <p>• 여러 번 실행해도 중복 업로드 없음 (안전)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-10 bg-indigo-50 border border-indigo-200 rounded-xl p-5">
+      <h4 class="font-bold text-indigo-900 mb-2 flex items-center gap-2">
+        <span>🌙</span> 저녁 피드백 미팅
+      </h4>
+      <p class="text-sm text-indigo-900 leading-relaxed">
+        <code class="cmd">!아카이브</code> 이후 <code class="cmd">Day N/messages.md</code> 파일이 오늘의 기록을 구조화해줍니다.
+        팀 전원이 폴더 열고 미팅 시작 — 각자 올린 내용이 시간순으로 정리되어 있어 어젠다가 자동으로 잡힙니다.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="tips" class="max-w-4xl mx-auto px-6 py-16">
+  <h2 class="text-3xl font-bold mb-2 text-slate-900">잘 쓰는 팁</h2>
+  <p class="text-slate-600 mb-8">이 팁만 지키면 출장 데이터 품질이 2배.</p>
+
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="bg-green-50 border border-green-200 rounded-xl p-5">
+      <div class="font-bold text-green-900 mb-1.5 flex items-center gap-2"><span class="text-lg">✓</span> 현장에서 바로 올리기</div>
+      <p class="text-sm text-green-900/80">"나중에 정리해야지"는 실패 공식. 보고 들으면 10초 안에 스레드에 던지기.</p>
+    </div>
+    <div class="bg-green-50 border border-green-200 rounded-xl p-5">
+      <div class="font-bold text-green-900 mb-1.5 flex items-center gap-2"><span class="text-lg">✓</span> 사진엔 맥락 한 줄</div>
+      <p class="text-sm text-green-900/80">사진만 올리지 말고 "누가 발표하는 슬라이드" 같은 설명 함께. 저녁에 "이거 뭐였더라" 방지.</p>
+    </div>
+    <div class="bg-green-50 border border-green-200 rounded-xl p-5">
+      <div class="font-bold text-green-900 mb-1.5 flex items-center gap-2"><span class="text-lg">✓</span> 출처 명시</div>
+      <p class="text-sm text-green-900/80">"Saito 선생님이 말하길..." 식으로 누가 말한 내용인지 본문에 명시. 보고서 작성 시 인용이 쉬움.</p>
+    </div>
+    <div class="bg-green-50 border border-green-200 rounded-xl p-5">
+      <div class="font-bold text-green-900 mb-1.5 flex items-center gap-2"><span class="text-lg">✓</span> 본인 관점 추가</div>
+      <p class="text-sm text-green-900/80">관찰만 말고 "우리쪽 시사점은..." 한 줄 덧붙이기. 팀원들이 당신의 해석을 볼 수 있음.</p>
+    </div>
+    <div class="bg-red-50 border border-red-200 rounded-xl p-5">
+      <div class="font-bold text-red-900 mb-1.5 flex items-center gap-2"><span class="text-lg">✗</span> 개인 DM에 올리지 말기</div>
+      <p class="text-sm text-red-900/80">반드시 출장 쓰레드에. 개인 메모는 팀이 못 봅니다.</p>
+    </div>
+    <div class="bg-red-50 border border-red-200 rounded-xl p-5">
+      <div class="font-bold text-red-900 mb-1.5 flex items-center gap-2"><span class="text-lg">✗</span> 명령어 단독으로만</div>
+      <p class="text-sm text-red-900/80"><code class="cmd">!대용량</code>만 단독 전송. "!대용량 부탁해요" ❌ / "!대용량" ⭕</p>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="bg-slate-100 py-16">
+  <div class="max-w-3xl mx-auto px-6">
+    <h2 class="text-3xl font-bold mb-8 text-slate-900 text-center">FAQ</h2>
+    <div class="space-y-3">
+      <details class="bg-white p-5 rounded-xl border border-slate-200 group">
+        <summary class="font-semibold cursor-pointer text-slate-900">초대 메일 받는 데 얼마나 걸리나요?</summary>
+        <p class="text-slate-600 text-sm mt-3 leading-relaxed">이메일 제출 후 보통 1영업일 내 발송됩니다. 이틀 넘도록 안 오면 스팸함 확인 후 이은상에게 DM 주세요.</p>
+      </details>
+      <details class="bg-white p-5 rounded-xl border border-slate-200 group">
+        <summary class="font-semibold cursor-pointer text-slate-900">출장 쓰레드는 누가 만드나요?</summary>
+        <p class="text-slate-600 text-sm mt-3 leading-relaxed">각 출장은 사전에 관리자가 parent 메시지를 올려둡니다. 팀원은 해당 쓰레드에 댓글로 참여만 하면 됩니다.</p>
+      </details>
+      <details class="bg-white p-5 rounded-xl border border-slate-200 group">
+        <summary class="font-semibold cursor-pointer text-slate-900">Dropbox 폴더 구조가 어떻게 되나요?</summary>
+        <p class="text-slate-600 text-sm mt-3 leading-relaxed"><code class="cmd">전략기획 / 400 시장분석 / 000 학회 자료 / {출장제목} / {Day N}</code><br>예: <code class="cmd">260501-1st Day</code>, <code class="cmd">260502-2nd Day</code>.</p>
+      </details>
+      <details class="bg-white p-5 rounded-xl border border-slate-200 group">
+        <summary class="font-semibold cursor-pointer text-slate-900"><code class="cmd">!대용량</code> 링크가 모바일에서 앱으로 안 열려요.</summary>
+        <p class="text-slate-600 text-sm mt-3 leading-relaxed">Dropbox 모바일 앱이 설치되어 있고 회사 계정으로 로그인된 상태여야 합니다. 미설치 시 웹페이지로 열리므로 반드시 앱 설치해주세요.</p>
+      </details>
+      <details class="bg-white p-5 rounded-xl border border-slate-200 group">
+        <summary class="font-semibold cursor-pointer text-slate-900">과거 출장 자료는 어디서 보나요?</summary>
+        <p class="text-slate-600 text-sm mt-3 leading-relaxed">Dropbox의 <code class="cmd">000 학회 자료</code> 폴더 하위에 모든 과거 출장이 연도·행사별로 남아있습니다. 팀 공유 폴더라 누구나 열람 가능.</p>
+      </details>
+      <details class="bg-white p-5 rounded-xl border border-slate-200 group">
+        <summary class="font-semibold cursor-pointer text-slate-900">출장 쓰레드에 올린 메시지를 수정·삭제할 수 있나요?</summary>
+        <p class="text-slate-600 text-sm mt-3 leading-relaxed">Slack 기본 기능으로 본인 메시지는 언제든 수정·삭제 가능. 단 <code class="cmd">!아카이브</code> 이미 실행된 내용은 Dropbox에도 반영되어 있으니, 수정 후 <code class="cmd">!아카이브</code> 다시 실행하면 Dropbox도 갱신됩니다.</p>
+      </details>
+      <details class="bg-white p-5 rounded-xl border border-slate-200 group">
+        <summary class="font-semibold cursor-pointer text-slate-900">문제 생기면 누구한테 물어보나요?</summary>
+        <p class="text-slate-600 text-sm mt-3 leading-relaxed">이은상 매니저 (<a href="mailto:eunsang.lee@endorobo.com" class="text-indigo-600 underline">eunsang.lee@endorobo.com</a>) 또는 Slack DM으로 문의.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<footer class="bg-white border-t border-slate-200 py-10">
+  <div class="max-w-5xl mx-auto px-6 text-center">
+    <div class="flex items-center justify-center gap-2.5 mb-3">
+      <div class="w-6 h-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-md flex items-center justify-center text-white text-[10px] font-bold">TA</div>
+      <span class="font-bold text-slate-700">Trip Agent</span>
+    </div>
+    <p class="text-sm text-slate-500">
+      Endorobotics · 해외출장 기록 자동화 ·
+      <a href="https://github.com/esl-0604/TripAgent" class="text-indigo-600 hover:underline">GitHub</a>
+    </p>
+    <p class="text-xs text-slate-400 mt-2">
+      문의: <a href="mailto:eunsang.lee@endorobo.com" class="underline">eunsang.lee@endorobo.com</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
