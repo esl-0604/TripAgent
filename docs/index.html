@@ -36,7 +36,8 @@
     .sec-h { display: flex; align-items: center; gap: 0.75rem; font-size: 1.625rem; font-weight: 700; margin-top: 5rem; margin-bottom: 1.25rem; padding-top: 2rem; border-top: 1px solid var(--border); }
     .tab-content > section:first-child .sec-h { margin-top: 1rem; padding-top: 0; border-top: none; }
 
-    .sub-h { font-size: 1rem; font-weight: 600; margin-top: 1.75rem; margin-bottom: 0.625rem; color: #1e293b; }
+    .sub-h { font-size: 1.2rem; font-weight: 700; margin-top: 3rem; margin-bottom: 0.9rem; color: var(--brand); letter-spacing: -0.01em; }
+    .sub-h > code.cmd { font-size: 0.88em; }
 
     a.link { color: var(--brand-hover); text-decoration: underline; text-underline-offset: 2px; }
     a.link:hover { color: var(--brand); }
@@ -80,7 +81,8 @@
     .screenshot-wrap img { max-width: 100%; height: auto; display: block; }
     .screenshot-wrap .marker { position: absolute; border: 3px solid #ef4444; border-radius: 4px; box-sizing: border-box; pointer-events: none; box-shadow: 0 0 0 2px rgba(239,68,68,0.15); }
     .screenshot-wrap .marker-label { position: absolute; background: #ef4444; color: white; padding: 2px 7px; border-radius: 3px; font-size: 0.7rem; font-weight: 700; white-space: nowrap; font-family: 'Inter', sans-serif; line-height: 1.3; }
-    .screenshot figcaption { padding: 0.625rem 0.875rem; font-size: 0.8rem; color: #475569; background: #f8fafc; border-top: 1px solid var(--border); line-height: 1.5; }
+    .screenshot figcaption { padding: 0.9rem 1.1rem; font-size: 0.95rem; color: #0f172a; background: #eff6ff; border-top: 1px solid #bfdbfe; line-height: 1.65; }
+    .screenshot figcaption strong { color: var(--brand); }
     .img-missing { padding: 2.5rem 1rem; text-align: center; color: #94a3b8; font-size: 0.85rem; background: #f1f5f9; }
 
     @media print {
@@ -221,7 +223,7 @@
 
   <!-- 3-1 채널 조인 -->
   <h3 class="sub-h">3-1. 모든 채널 조인하기</h3>
-  <p class="text-sm" style="color: var(--text);">Endorobotics 워크스페이스에는 아래 채널들이 있습니다. <strong>전부 조인</strong>해야 팀 공지·자료를 놓치지 않습니다.</p>
+  <p class="text-base leading-relaxed" style="color: var(--text);">Endorobotics 워크스페이스에는 아래 채널들이 있습니다. <strong>전부 조인</strong>해야 팀 공지·자료를 놓치지 않습니다.</p>
 
   <div class="overflow-x-auto border rounded-lg bg-white mt-3" style="border-color: var(--border);">
     <table class="w-full border-collapse text-sm">
@@ -248,8 +250,8 @@
     </table>
   </div>
 
-  <p class="text-sm mt-4 font-semibold">조인하는 법</p>
-  <ol class="list-decimal list-inside text-sm space-y-1 ml-1" style="color: var(--text);">
+  <p class="text-base mt-5 font-semibold">조인하는 법</p>
+  <ol class="list-decimal list-inside text-base space-y-1.5 ml-1 leading-relaxed" style="color: var(--text);">
     <li>좌측 사이드바 하단 <strong>"+ 채널 추가"</strong> 클릭</li>
     <li><strong>"채널 찾아보기(Browse channels)"</strong> 선택 → 전체 채널 리스트 표시</li>
     <li>위 표의 각 채널을 하나씩 클릭 → <strong>"참여(Join)"</strong> 버튼 클릭</li>
@@ -264,9 +266,9 @@
 
   <!-- 3-2 섹션으로 정리 -->
   <h3 class="sub-h">3-2. 섹션으로 정리하기 (선택 · 권장)</h3>
-  <p class="text-sm" style="color: var(--text);">기본적으로 채널은 일자순으로 나열됩니다. <strong>"섹션(Section)"</strong>으로 묶으면 사이드바가 위 스크린샷처럼 깔끔해집니다.</p>
+  <p class="text-base leading-relaxed" style="color: var(--text);">기본적으로 채널은 일자순으로 나열됩니다. <strong>"섹션(Section)"</strong>으로 묶으면 사이드바가 위 스크린샷처럼 깔끔해집니다.</p>
 
-  <ol class="list-decimal list-inside text-sm space-y-1 ml-1 mt-3" style="color: var(--text);">
+  <ol class="list-decimal list-inside text-base space-y-1.5 ml-1 mt-3 leading-relaxed" style="color: var(--text);">
     <li>사이드바 어떤 채널이든 <strong>오른쪽 클릭</strong> (모바일: 길게 누르기) → <strong>"섹션으로 이동"</strong> → <strong>"새 섹션 만들기"</strong></li>
     <li>권장 섹션 이름: <code class="cmd">일반</code> · <code class="cmd">품질시스템(QMS)</code> · <code class="cmd">최신동향</code> · <code class="cmd">해외출장</code> · <code class="cmd">Agent 개발</code></li>
     <li>각 채널을 해당 섹션으로 드래그 앤 드롭하여 정리</li>
@@ -275,13 +277,13 @@
 
   <!-- 3-3 출장 기록 -->
   <h3 class="sub-h">3-3. 출장 기록 남기기</h3>
-  <p class="text-sm" style="color: var(--text);">
+  <p class="text-base leading-relaxed" style="color: var(--text);">
     출장 기록은 전부 <code class="cmd">#출장일지</code> 채널 안에서 진행합니다.
     <strong style="color: #dc2626;">명령어는 반드시 출장 쓰레드(댓글창) 안에서만 동작</strong>합니다. 채널 본문(root)에 쓰면 무시됩니다.
   </p>
 
-  <p class="text-sm font-semibold mt-5">Step 1. <code class="cmd">#출장일지</code> 채널 입장</p>
-  <p class="text-sm mt-1" style="color: var(--text);">좌측 사이드바 <strong>해외출장</strong> 섹션 → <code class="cmd">#출장일지</code> 클릭. 봇(Trip Agent)이 올려둔 <strong>출장 제목 메시지</strong>들이 보입니다.</p>
+  <p class="text-base font-semibold mt-6">Step 1. <code class="cmd">#출장일지</code> 채널 입장</p>
+  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">좌측 사이드바 <strong>해외출장</strong> 섹션 → <code class="cmd">#출장일지</code> 클릭. 봇(Trip Agent)이 올려둔 <strong>출장 제목 메시지</strong>들이 보입니다.</p>
 
   <figure class="screenshot">
     <div class="screenshot-wrap">
@@ -290,8 +292,8 @@
     <figcaption>Trip Agent 봇이 올린 출장 제목 메시지 4개가 시간순으로 보입니다. 이 중 <strong>본인이 참가할 출장</strong>(예: <code class="cmd">260501-07, 미국, DDW 2026</code>)을 찾으세요.</figcaption>
   </figure>
 
-  <p class="text-sm font-semibold mt-5">Step 2. 해당 메시지에 마우스를 올려 쓰레드 열기</p>
-  <p class="text-sm mt-1" style="color: var(--text);">메시지 위로 마우스를 가져가면 오른쪽에 아이콘들이 뜹니다. <strong>말풍선 모양(스레드의 댓글)</strong>을 클릭하면 오른쪽에 쓰레드 패널이 열립니다.</p>
+  <p class="text-base font-semibold mt-6">Step 2. 해당 메시지에 마우스를 올려 쓰레드 열기</p>
+  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">메시지 위로 마우스를 가져가면 오른쪽에 아이콘들이 뜹니다. <strong>말풍선 모양(스레드의 댓글)</strong>을 클릭하면 오른쪽에 쓰레드 패널이 열립니다.</p>
 
   <figure class="screenshot">
     <div class="screenshot-wrap">
@@ -300,8 +302,8 @@
     <figcaption>메시지 hover 시 우측 상단에 아이콘 묶음이 나타납니다. 이 중 <strong>말풍선 모양</strong> (툴팁에 "스레드의 댓글"이라고 뜸)을 클릭하면 쓰레드 패널이 열립니다.</figcaption>
   </figure>
 
-  <p class="text-sm font-semibold mt-5">Step 3. 쓰레드에 본인 기록 남기기</p>
-  <p class="text-sm mt-1" style="color: var(--text);">우측 패널의 <strong>"댓글 남기기..."</strong>에 텍스트·사진·영상을 올리세요.</p>
+  <p class="text-base font-semibold mt-6">Step 3. 쓰레드에 본인 기록 남기기</p>
+  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">우측 패널의 <strong>"댓글 남기기..."</strong>에 텍스트·사진·영상을 올리세요.</p>
 
   <figure class="screenshot">
     <div class="screenshot-wrap">
@@ -310,8 +312,8 @@
     <figcaption>오른쪽에 쓰레드 패널이 열리면, 하단 <strong>"댓글 남기기…" 입력창</strong>에 관찰 내용·사진·영상을 올립니다. 사진에는 반드시 한 줄 설명을 함께.</figcaption>
   </figure>
 
-  <p class="text-sm font-semibold mt-5">Step 4. 대용량 영상 업로드 — <code class="cmd">!대용량</code></p>
-  <p class="text-sm mt-1" style="color: var(--text);">1GB 넘는 영상(수술 녹화·강의 풀영상 등)은 댓글란에 <code class="cmd">!대용량</code> 을 단독으로 입력해 전송합니다. 봇이 <strong>"드랍박스 앱 열기"</strong> 링크를 답장합니다.</p>
+  <p class="text-base font-semibold mt-6">Step 4. 대용량 영상 업로드 — <code class="cmd">!대용량</code></p>
+  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">1GB 넘는 영상(수술 녹화·강의 풀영상 등)은 댓글란에 <code class="cmd">!대용량</code> 을 단독으로 입력해 전송합니다. 봇이 <strong>"드랍박스 앱 열기"</strong> 링크를 답장합니다.</p>
 
   <figure class="screenshot">
     <div class="screenshot-wrap">
@@ -320,8 +322,8 @@
     <figcaption>봇이 쓰레드 패널에 답장한 <strong>"드랍박스 앱 열기"</strong> 링크를 폰에서 탭하면 <strong>오늘 Day N 폴더</strong>가 자동으로 열립니다. 폴더의 <code class="cmd">+</code> 버튼으로 파일 업로드. 폰 잠그거나 앱 전환해도 백그라운드 업로드가 지속됩니다.</figcaption>
   </figure>
 
-  <p class="text-sm font-semibold mt-5">Step 5. 하루 마무리 — <code class="cmd">!아카이브</code></p>
-  <p class="text-sm mt-1" style="color: var(--text);">저녁 피드백 미팅 직전에 같은 쓰레드에 <code class="cmd">!아카이브</code>를 입력합니다. 쓰레드 전체 댓글이 <code class="cmd">messages.md</code>로, 첨부 파일이 <strong>Day N 폴더</strong>로 동기화됩니다.</p>
+  <p class="text-base font-semibold mt-6">Step 5. 하루 마무리 — <code class="cmd">!아카이브</code></p>
+  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">저녁 피드백 미팅 직전에 같은 쓰레드에 <code class="cmd">!아카이브</code>를 입력합니다. 쓰레드 전체 댓글이 <code class="cmd">messages.md</code>로, 첨부 파일이 <strong>Day N 폴더</strong>로 동기화됩니다.</p>
 
   <figure class="screenshot">
     <div class="screenshot-wrap">
@@ -354,7 +356,7 @@
 
   <!-- 3-4 학회 강의 기록 -->
   <h3 class="sub-h">3-4. 학회 강의 기록 남기는 법</h3>
-  <p class="text-sm" style="color: var(--text);">
+  <p class="text-base leading-relaxed" style="color: var(--text);">
     강의 기록은 <code class="cmd">#학회강의</code> 채널에서 진행합니다.
     <strong>청자 1명 = 쓰레드 1개</strong>가 출장마다 미리 준비되어 있고
     (예: <code class="cmd">260501-07, 미국, DDW 2026 @권태빈</code>),
@@ -362,20 +364,20 @@
     <strong style="color: #dc2626;">명령어는 반드시 쓰레드 댓글창에서만 동작</strong>합니다.
   </p>
 
-  <p class="text-sm font-semibold mt-5">Step 1. 본인 이름이 붙은 쓰레드 찾기</p>
-  <p class="text-sm mt-1" style="color: var(--text);">좌측 사이드바 <strong>해외출장</strong> 섹션 → <code class="cmd">#학회강의</code>. Trip Agent 봇이 올려둔 쓰레드 제목 중 본인 이름(<code class="cmd">@이름</code>)이 붙은 메시지를 찾아 말풍선 아이콘을 클릭해 쓰레드를 엽니다.</p>
+  <p class="text-base font-semibold mt-6">Step 1. 본인 이름이 붙은 쓰레드 찾기</p>
+  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">좌측 사이드바 <strong>해외출장</strong> 섹션 → <code class="cmd">#학회강의</code>. Trip Agent 봇이 올려둔 쓰레드 제목 중 본인 이름(<code class="cmd">@이름</code>)이 붙은 메시지를 찾아 말풍선 아이콘을 클릭해 쓰레드를 엽니다.</p>
 
-  <p class="text-sm font-semibold mt-5">Step 2. 강의 시작 — <code class="cmd">!시작</code></p>
-  <p class="text-sm mt-1" style="color: var(--text);">강의가 시작되는 시점에 쓰레드 댓글창에 <code class="cmd">!시작</code>을 <strong>단독으로</strong> 입력·전송합니다. 봇이 드롭박스에 <strong>본인 이름 + 회차 번호</strong> 폴더를 자동 생성합니다 (예: <code class="cmd">권태빈_강의1</code>).</p>
+  <p class="text-base font-semibold mt-6">Step 2. 강의 시작 — <code class="cmd">!시작</code></p>
+  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">강의가 시작되는 시점에 쓰레드 댓글창에 <code class="cmd">!시작</code>을 <strong>단독으로</strong> 입력·전송합니다. 봇이 드롭박스에 <strong>본인 이름 + 회차 번호</strong> 폴더를 자동 생성합니다 (예: <code class="cmd">권태빈_강의1</code>).</p>
 
-  <p class="text-sm font-semibold mt-5">Step 3. 실시간 기록</p>
-  <p class="text-sm mt-1" style="color: var(--text);">강의를 들으며 쓰레드에 자유롭게 메모를 쓰고, PPT 사진·짧은 음성 클립 등을 업로드하세요. 강의가 끝날 때 녹음 파일을 함께 올리면 됩니다 (1GB 이하).</p>
+  <p class="text-base font-semibold mt-6">Step 3. 실시간 기록</p>
+  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">강의를 들으며 쓰레드에 자유롭게 메모를 쓰고, PPT 사진·짧은 음성 클립 등을 업로드하세요. 강의가 끝날 때 녹음 파일을 함께 올리면 됩니다 (1GB 이하).</p>
 
-  <p class="text-sm font-semibold mt-5">Step 4. 대용량 업로드 — <code class="cmd">!대용량</code> (선택)</p>
-  <p class="text-sm mt-1" style="color: var(--text);">녹음 파일이 1GB를 넘거나 풀영상을 올려야 할 때, 쓰레드에 <code class="cmd">!대용량</code>을 입력하면 봇이 <strong>해당 강의 폴더</strong>로 바로 이어지는 드롭박스 앱 링크를 답장합니다. 폰에서 탭 → 앱에서 백그라운드 업로드.</p>
+  <p class="text-base font-semibold mt-6">Step 4. 대용량 업로드 — <code class="cmd">!대용량</code> (선택)</p>
+  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);">녹음 파일이 1GB를 넘거나 풀영상을 올려야 할 때, 쓰레드에 <code class="cmd">!대용량</code>을 입력하면 봇이 <strong>해당 강의 폴더</strong>로 바로 이어지는 드롭박스 앱 링크를 답장합니다. 폰에서 탭 → 앱에서 백그라운드 업로드.</p>
 
-  <p class="text-sm font-semibold mt-5">Step 5. 강의 종료 — <code class="cmd">!끝</code></p>
-  <p class="text-sm mt-1" style="color: var(--text);"><code class="cmd">!시작</code>과 <code class="cmd">!끝</code> 사이의 모든 댓글·첨부파일이 강의 폴더로 자동 아카이브됩니다. 이후 같은 쓰레드에 <code class="cmd">!시작</code>을 다시 입력하면 <strong>강의2</strong>가 새로 열립니다.</p>
+  <p class="text-base font-semibold mt-6">Step 5. 강의 종료 — <code class="cmd">!끝</code></p>
+  <p class="text-base mt-1.5 leading-relaxed" style="color: var(--text);"><code class="cmd">!시작</code>과 <code class="cmd">!끝</code> 사이의 모든 댓글·첨부파일이 강의 폴더로 자동 아카이브됩니다. 이후 같은 쓰레드에 <code class="cmd">!시작</code>을 다시 입력하면 <strong>강의2</strong>가 새로 열립니다.</p>
 
   <div class="mt-6 border rounded-lg p-4 bg-white" style="border-color: var(--border);">
     <div class="text-sm font-semibold mb-2" style="color: var(--brand);">📁 최종 폴더 구조</div>
