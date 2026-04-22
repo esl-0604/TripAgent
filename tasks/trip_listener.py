@@ -40,6 +40,7 @@ from connectors.slack.client import (
 )
 from tasks.daily_trip_archive import (
     DROPBOX_BASE,
+    PRE_TRIP_FOLDER_NAME,
     TEAM_ROOT,
     archive_parent_by_ts,
 )
@@ -70,7 +71,8 @@ def _resolve_day_destination(parent: dict) -> tuple[str, str, dict]:
     """From the parent message, compute target Dropbox folder + human label.
 
     Returns (dropbox_path, label, trip_info).
-    If today is before trip start, uses trip root folder.
+    Pre-trip uploads are routed into a single "출장전" folder (matches the
+    !아카이브 behavior).
     """
     title = (parent.get("text") or "").strip()
     trip = parse_parent(title)
@@ -81,7 +83,11 @@ def _resolve_day_destination(parent: dict) -> tuple[str, str, dict]:
     if day_num >= 1:
         folder = day_folder_name(today_local, day_num)
         return f"{trip_folder}/{folder}", folder, {"title": title, "tz": trip_tz}
-    return trip_folder, "(출장 시작 전 — 출장 폴더 root)", {"title": title, "tz": trip_tz}
+    return (
+        f"{trip_folder}/{PRE_TRIP_FOLDER_NAME}",
+        PRE_TRIP_FOLDER_NAME,
+        {"title": title, "tz": trip_tz},
+    )
 
 
 def _try_delete_trigger(channel: str, ts: str, label: str) -> None:

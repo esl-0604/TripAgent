@@ -24,6 +24,10 @@ TEAM_ROOT_NS = "4745864929"
 TEAM_ROOT = {".tag": "root", "root": TEAM_ROOT_NS}
 DROPBOX_BASE = "/전략기획/400 시장분석/000 학회 자료"
 
+# Sentinel day_num for messages posted before the trip start date.
+PRE_TRIP_DAY_NUM = 0
+PRE_TRIP_FOLDER_NAME = "출장전"
+
 STATE_PATH = Path(__file__).resolve().parents[1] / "state" / "trip_archive_state.json"
 
 
@@ -143,20 +147,21 @@ def process_parent(
         print(f"[nop]  {title}  (tz={trip_tz}, no new replies since last run)")
         return {"status": "nop", "title": title, "message": "마지막 아카이브 이후 새 메시지 없음"}
 
-    # Group ALL replies by trip-local day
+    # Group ALL replies by trip-local day. Pre-trip messages collapse into
+    # a single PRE_TRIP_DAY_NUM (=0) bucket — folder "출장전".
     by_day: dict[int, tuple[date, list]] = {}
     for r in all_replies:
         local_dt = slack_ts_to_local(r["ts"], trip_tz)
         d = local_dt.date()
-        day_num = (d - trip.start_date).days + 1
-        if day_num < 1:
-            continue
-        bucket = by_day.setdefault(day_num, (d, []))
+        raw_day = (d - trip.start_date).days + 1
+        day_num = raw_day if raw_day >= 1 else PRE_TRIP_DAY_NUM
+        bucket_date = d if raw_day >= 1 else trip.start_date
+        bucket = by_day.setdefault(day_num, (bucket_date, []))
         bucket[1].append(r)
 
     if not by_day:
         print(f"[nop]  {title}  (tz={trip_tz}, no in-range replies)")
-        return {"status": "nop", "title": title, "message": "출장 시작일 이전 메시지만 있어 스킵"}
+        return {"status": "nop", "title": title, "message": "처리할 메시지 없음"}
 
     # Only regenerate days that got new content
     affected_days = set()
@@ -165,13 +170,13 @@ def process_parent(
             continue
         local_dt = slack_ts_to_local(r["ts"], trip_tz)
         d = local_dt.date()
-        day_num = (d - trip.start_date).days + 1
-        if day_num >= 1:
-            affected_days.add(day_num)
+        raw_day = (d - trip.start_date).days + 1
+        day_num = raw_day if raw_day >= 1 else PRE_TRIP_DAY_NUM
+        affected_days.add(day_num)
 
     if not affected_days:
-        print(f"[nop]  {title}  (tz={trip_tz}, new replies all before trip start)")
-        return {"status": "nop", "title": title, "message": "새 메시지가 모두 출장 시작일 이전"}
+        print(f"[nop]  {title}  (tz={trip_tz}, no new in-range replies)")
+        return {"status": "nop", "title": title, "message": "새 메시지 없음"}
 
     total_replies = 0
     total_attachments_uploaded = 0
@@ -182,7 +187,10 @@ def process_parent(
 
     for day_num in sorted(affected_days):
         d, day_replies = by_day[day_num]
-        folder_name = day_folder_name(d, day_num)
+        if day_num == PRE_TRIP_DAY_NUM:
+            folder_name = PRE_TRIP_FOLDER_NAME
+        else:
+            folder_name = day_folder_name(d, day_num)
         trip_folder = f"{DROPBOX_BASE}/{title}"
         day_folder = f"{trip_folder}/{folder_name}"
 
