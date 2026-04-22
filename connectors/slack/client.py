@@ -38,6 +38,14 @@ def get_channel_id() -> str:
     return cid
 
 
+def get_lecture_channel_id() -> str:
+    _load_env()
+    cid = os.environ.get("LECTURE_CHANNEL_ID", "")
+    if not cid:
+        raise RuntimeError("LECTURE_CHANNEL_ID is empty. Fill it in .env")
+    return cid
+
+
 def call(method: str, payload: dict | None = None, token_kind: str = "bot") -> dict:
     """Call Slack Web API method using form-urlencoded POST.
 

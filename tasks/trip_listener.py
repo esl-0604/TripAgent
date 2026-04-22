@@ -1,8 +1,13 @@
-"""Socket Mode listener for #출장일지 commands.
+"""Socket Mode listener for #출장일지 and #학회강의 commands.
 
-Supports two triggers posted as thread replies:
-  !아카이브  — archives new thread replies + Slack attachments into Dropbox
-  !대용량    — creates a Dropbox File Request URL for mobile large-file upload
+#출장일지 (TRIP_CHANNEL_ID):
+  !아카이브  — archives new thread replies + attachments into Day N folder
+  !대용량    — shared folder link into today's Day N folder
+
+#학회강의 (LECTURE_CHANNEL_ID):
+  !시작      — open a lecture session; create 학회강의/{attendee}_강의{N}/ folder
+  !끝        — finalize session; archive replies + attachments into the folder
+  !대용량    — shared folder link into the active lecture folder
 
 Keeps a persistent WebSocket connection to Slack. No public endpoint needed.
 Run with: python tasks/trip_listener.py
@@ -29,6 +34,7 @@ from connectors.slack.client import (
     call,
     delete_message,
     get_channel_id,
+    get_lecture_channel_id,
     get_token,
     post_message,
 )
@@ -38,6 +44,13 @@ from tasks.daily_trip_archive import (
     archive_parent_by_ts,
 )
 from tasks.dropbox_upload_watcher import start_background_thread as start_watcher
+from tasks.lecture_archive import (
+    END_TRIGGER,
+    START_TRIGGER,
+    end_session,
+    get_lecture_folder_for_upload,
+    start_session,
+)
 from tasks.trip_parser import day_folder_name, parse_parent
 from tasks.trip_timezones import get_timezone
 
@@ -71,6 +84,13 @@ def _resolve_day_destination(parent: dict) -> tuple[str, str, dict]:
     return trip_folder, "(출장 시작 전 — 출장 폴더 root)", {"title": title, "tz": trip_tz}
 
 
+def _try_delete_trigger(channel: str, ts: str, label: str) -> None:
+    try:
+        delete_message(channel=channel, ts=ts, token_kind="user")
+    except Exception as e:
+        print(f"[warn] failed to delete {label} trigger: {e}")
+
+
 def handle_archive(channel_id: str, parent_ts: str, trigger_ts: str, user_id: str) -> None:
     print(f"[trigger] {ARCHIVE_TRIGGER} from {user_id} on parent_ts={parent_ts}")
     with _lock:
@@ -96,30 +116,21 @@ def handle_archive(channel_id: str, parent_ts: str, trigger_ts: str, user_id: st
         except Exception as e:
             print(f"[warn] failed to post archive response: {e}")
 
-        try:
-            delete_message(channel=channel_id, ts=trigger_ts, token_kind="user")
-        except Exception as e:
-            print(f"[warn] failed to delete trigger: {e}")
+        _try_delete_trigger(channel_id, trigger_ts, ARCHIVE_TRIGGER)
 
 
-def handle_upload(channel_id: str, parent_ts: str, trigger_ts: str, user_id: str) -> None:
-    print(f"[trigger] {UPLOAD_TRIGGER} from {user_id} on parent_ts={parent_ts}")
+def handle_upload_trip(channel_id: str, parent_ts: str, trigger_ts: str, user_id: str) -> None:
+    print(f"[trigger] {UPLOAD_TRIGGER} (trip) from {user_id} on parent_ts={parent_ts}")
     with _lock:
         try:
-            # Fetch parent to parse trip title
             res = call("conversations.replies", {"channel": channel_id, "ts": parent_ts, "limit": 1})
             msgs = res.get("messages") or []
             if not msgs:
                 raise RuntimeError("parent 메시지를 찾을 수 없음")
             parent = msgs[0]
 
-            dest, label, info = _resolve_day_destination(parent)
-            title = info["title"]
-
-            # Ensure destination folder exists
+            dest, label, _info = _resolve_day_destination(parent)
             create_folder(dest, path_root=TEAM_ROOT)
-
-            # Shared folder link — opens native Dropbox app on mobile
             folder_url = get_or_create_folder_link(dest, path_root=TEAM_ROOT)
             text = (
                 f"*{label}*\n"
@@ -129,7 +140,7 @@ def handle_upload(channel_id: str, parent_ts: str, trigger_ts: str, user_id: str
             )
             blocks = _blocks("📤", text)
         except Exception as e:
-            print(f"[error upload] {e}")
+            print(f"[error upload trip] {e}")
             blocks = _blocks("❌", f"업로드 링크 생성 실패: `{e}`")
 
         try:
@@ -137,49 +148,146 @@ def handle_upload(channel_id: str, parent_ts: str, trigger_ts: str, user_id: str
         except Exception as e:
             print(f"[warn] failed to post upload link: {e}")
 
+        _try_delete_trigger(channel_id, trigger_ts, UPLOAD_TRIGGER)
+
+
+def handle_upload_lecture(channel_id: str, parent_ts: str, trigger_ts: str, user_id: str) -> None:
+    print(f"[trigger] {UPLOAD_TRIGGER} (lecture) from {user_id} on parent_ts={parent_ts}")
+    with _lock:
         try:
-            delete_message(channel=channel_id, ts=trigger_ts, token_kind="user")
+            dest = get_lecture_folder_for_upload(parent_ts)
+            if not dest:
+                blocks = _blocks(
+                    "⚠️",
+                    "진행 중인 강의가 없습니다. `!시작`을 먼저 입력해주세요.",
+                )
+            else:
+                create_folder(dest, path_root=TEAM_ROOT)
+                folder_url = get_or_create_folder_link(dest, path_root=TEAM_ROOT)
+                label = dest.rsplit("/", 1)[-1]
+                text = (
+                    f"*{label}*\n"
+                    f"<{folder_url}|드랍박스 앱 열기>\n\n"
+                    f"_앱에서 폴더 열린 뒤 `+` 버튼으로 업로드_\n"
+                    f"_화면 잠가도·앱 전환해도 이어집니다 (OS 백그라운드)_"
+                )
+                blocks = _blocks("📤", text)
         except Exception as e:
-            print(f"[warn] failed to delete trigger: {e}")
+            print(f"[error upload lecture] {e}")
+            blocks = _blocks("❌", f"업로드 링크 생성 실패: `{e}`")
+
+        try:
+            post_message(channel=channel_id, text="upload link", blocks=blocks, thread_ts=parent_ts)
+        except Exception as e:
+            print(f"[warn] failed to post upload link: {e}")
+
+        _try_delete_trigger(channel_id, trigger_ts, UPLOAD_TRIGGER)
 
 
-def handle_event(event: dict) -> None:
-    channel_id = get_channel_id()
-    if event.get("channel") != channel_id:
+def handle_start(channel_id: str, parent_ts: str, trigger_ts: str, user_id: str) -> None:
+    print(f"[trigger] {START_TRIGGER} from {user_id} on parent_ts={parent_ts}")
+    with _lock:
+        try:
+            result = start_session(channel_id, parent_ts, trigger_ts)
+            status = result.get("status")
+            if status == "ok":
+                text = (
+                    f"*{result['attendee']} · 강의{result['n']} 기록 시작*\n"
+                    f"폴더: `{result['folder']}`\n\n"
+                    f"_이 쓰레드 내의 모든 댓글·첨부파일이 `!끝` 입력 시점에 위 폴더로 아카이브됩니다._\n"
+                    f"_대용량 파일은 `!대용량`을 입력하면 같은 폴더 업로드 링크가 나옵니다._"
+                )
+                blocks = _blocks("🎙️", text)
+            elif status == "already_active":
+                blocks = _blocks("⚠️", result.get("message", "이미 진행 중인 강의가 있습니다."))
+            else:
+                blocks = _blocks("❌", result.get("message", "시작 실패"))
+        except Exception as e:
+            print(f"[error start] {e}")
+            blocks = _blocks("❌", f"시작 실패: `{e}`")
+
+        try:
+            post_message(channel=channel_id, text="lecture start", blocks=blocks, thread_ts=parent_ts)
+        except Exception as e:
+            print(f"[warn] failed to post start response: {e}")
+
+        _try_delete_trigger(channel_id, trigger_ts, START_TRIGGER)
+
+
+def handle_end(channel_id: str, parent_ts: str, trigger_ts: str, user_id: str) -> None:
+    print(f"[trigger] {END_TRIGGER} from {user_id} on parent_ts={parent_ts}")
+    with _lock:
+        try:
+            result = end_session(channel_id, parent_ts, trigger_ts)
+            status = result.get("status")
+            if status == "ok":
+                text = (
+                    f"*{result['attendee']} · 강의{result['n']} 아카이브 완료*\n"
+                    f"폴더: `{result['folder']}`\n"
+                    f"메시지 {result['replies']}개, 첨부 +{result['uploaded']} 업로드 "
+                    f"/ {result['skipped']} 스킵"
+                )
+                blocks = _blocks("✅", text)
+            elif status == "no_active":
+                blocks = _blocks("⚠️", result.get("message", "진행 중인 강의가 없습니다."))
+            else:
+                blocks = _blocks("❌", result.get("message", "종료 실패"))
+        except Exception as e:
+            print(f"[error end] {e}")
+            blocks = _blocks("❌", f"종료 실패: `{e}`")
+
+        try:
+            post_message(channel=channel_id, text="lecture end", blocks=blocks, thread_ts=parent_ts)
+        except Exception as e:
+            print(f"[warn] failed to post end response: {e}")
+
+        _try_delete_trigger(channel_id, trigger_ts, END_TRIGGER)
+
+
+def handle_event(event: dict, trip_channel: str, lecture_channel: str) -> None:
+    channel = event.get("channel")
+    if channel not in (trip_channel, lecture_channel):
         return
     if event.get("subtype"):
         return
 
     text = (event.get("text") or "").strip()
-    if text not in (ARCHIVE_TRIGGER, UPLOAD_TRIGGER):
-        return
-
     ts = event.get("ts")
     thread_ts = event.get("thread_ts")
     user_id = event.get("user") or "?"
 
     if not thread_ts or thread_ts == ts:
-        print(f"[ignore] '{text}' at root level (not inside a trip thread) from {user_id}")
+        # Commands are only valid as thread replies.
         return
 
-    if text == ARCHIVE_TRIGGER:
-        handle_archive(channel_id, thread_ts, ts, user_id)
-    elif text == UPLOAD_TRIGGER:
-        handle_upload(channel_id, thread_ts, ts, user_id)
+    if channel == trip_channel:
+        if text == ARCHIVE_TRIGGER:
+            handle_archive(channel, thread_ts, ts, user_id)
+        elif text == UPLOAD_TRIGGER:
+            handle_upload_trip(channel, thread_ts, ts, user_id)
+    elif channel == lecture_channel:
+        if text == START_TRIGGER:
+            handle_start(channel, thread_ts, ts, user_id)
+        elif text == END_TRIGGER:
+            handle_end(channel, thread_ts, ts, user_id)
+        elif text == UPLOAD_TRIGGER:
+            handle_upload_lecture(channel, thread_ts, ts, user_id)
 
 
-def on_request(client: SocketModeClient, req: SocketModeRequest) -> None:
-    client.send_socket_mode_response(SocketModeResponse(envelope_id=req.envelope_id))
+def _make_on_request(trip_channel: str, lecture_channel: str):
+    def on_request(client: SocketModeClient, req: SocketModeRequest) -> None:
+        client.send_socket_mode_response(SocketModeResponse(envelope_id=req.envelope_id))
+        if req.type != "events_api":
+            return
+        event = (req.payload or {}).get("event") or {}
+        if event.get("type") != "message":
+            return
+        try:
+            handle_event(event, trip_channel, lecture_channel)
+        except Exception as e:
+            print(f"[error] handle_event crashed: {e}")
 
-    if req.type != "events_api":
-        return
-    event = (req.payload or {}).get("event") or {}
-    if event.get("type") != "message":
-        return
-    try:
-        handle_event(event)
-    except Exception as e:
-        print(f"[error] handle_event crashed: {e}")
+    return on_request
 
 
 def main() -> None:
@@ -188,14 +296,23 @@ def main() -> None:
     if not app_token:
         raise RuntimeError("TRIP_APP_TOKEN is empty. Add xapp-... to .env")
     bot_token = get_token("bot")
-    channel_id = get_channel_id()
+    trip_channel = get_channel_id()
+    try:
+        lecture_channel = get_lecture_channel_id()
+    except RuntimeError as e:
+        print(f"[warn] {e} — 학회강의 commands disabled.")
+        lecture_channel = ""
 
     web = WebClient(token=bot_token)
     sm = SocketModeClient(app_token=app_token, web_client=web)
-    sm.socket_mode_request_listeners.append(on_request)
+    sm.socket_mode_request_listeners.append(_make_on_request(trip_channel, lecture_channel))
 
+    triggers_trip = f"{ARCHIVE_TRIGGER!r}/{UPLOAD_TRIGGER!r}"
+    triggers_lec = f"{START_TRIGGER!r}/{END_TRIGGER!r}/{UPLOAD_TRIGGER!r}"
     print(
-        f"[listener] connecting (channel={channel_id}, triggers={ARCHIVE_TRIGGER!r} / {UPLOAD_TRIGGER!r})..."
+        f"[listener] connecting...\n"
+        f"  trip_channel   = {trip_channel}  (triggers: {triggers_trip})\n"
+        f"  lecture_channel= {lecture_channel or '(disabled)'}  (triggers: {triggers_lec})"
     )
     sm.connect()
     print("[listener] connected. Starting Dropbox upload watcher thread.")
