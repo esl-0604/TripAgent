@@ -257,23 +257,31 @@
     </div>
   </div>
 
+  <style>
+    .zone-num { display: inline-flex; width: 1.4rem; height: 1.4rem; align-items: center; justify-content: center; border-radius: 50%; color: white; font-weight: 700; font-size: 0.8rem; margin-right: 0.5rem; flex-shrink: 0; }
+    .zone-resd   { background: #dc2626; }
+    .zone-cubot  { background: #059669; }
+    .zone-cup    { background: #ea580c; }
+    .zone-manual { background: #7c3aed; }
+  </style>
   <div class="grid md:grid-cols-2 gap-4 mt-4">
     <div class="border rounded-lg p-4 bg-white text-sm" style="border-color: var(--border); color: var(--text);">
       <div class="font-semibold mb-2" style="color: var(--brand);">DDW 부스 Zone (총 5개)</div>
-      <ul class="space-y-1.5 list-disc list-outside ml-5 leading-relaxed">
-        <li>RESD 핸즈온 <strong>× 2</strong></li>
-        <li>EndoCubot 핸즈온 <strong>× 1</strong></li>
-        <li>EndoCup 이벤트 <strong>× 1</strong></li>
-        <li>Manual Zone <strong>× 1</strong></li>
+      <ul class="space-y-1.5 leading-relaxed">
+        <li class="flex items-center"><span class="zone-num zone-resd">1</span>RESD 핸즈온 #1</li>
+        <li class="flex items-center"><span class="zone-num zone-resd">2</span>RESD 핸즈온 #2</li>
+        <li class="flex items-center"><span class="zone-num zone-cubot">3</span>EndoCubot 핸즈온</li>
+        <li class="flex items-center"><span class="zone-num zone-cup">4</span>EndoCup 이벤트</li>
+        <li class="flex items-center"><span class="zone-num zone-manual">5</span>Manual Zone</li>
       </ul>
     </div>
     <div class="border rounded-lg p-4 bg-white text-sm" style="border-color: var(--border); color: var(--text);">
       <div class="font-semibold mb-2" style="color: #047857;">ESGE 부스 Zone (총 4개)</div>
-      <ul class="space-y-1.5 list-disc list-outside ml-5 leading-relaxed">
-        <li>RESD 핸즈온 <strong>× 1</strong></li>
-        <li>EndoCubot 핸즈온 <strong>× 1</strong></li>
-        <li>EndoCup 이벤트 <strong>× 1</strong></li>
-        <li>Manual Zone <strong>× 1</strong></li>
+      <ul class="space-y-1.5 leading-relaxed">
+        <li class="flex items-center"><span class="zone-num zone-resd">1</span>RESD 핸즈온</li>
+        <li class="flex items-center"><span class="zone-num zone-cubot">2</span>EndoCubot 핸즈온</li>
+        <li class="flex items-center"><span class="zone-num zone-cup">3</span>EndoCup 이벤트</li>
+        <li class="flex items-center"><span class="zone-num zone-manual">4</span>Manual Zone</li>
       </ul>
     </div>
   </div>
