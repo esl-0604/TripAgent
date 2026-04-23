@@ -1341,11 +1341,273 @@
 <!-- =============================== -->
 <div class="tab-content" data-tab="kol" role="tabpanel">
 
+<style>
+  .company-card { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .company-card .co-head { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .company-card .co-name { font-weight: 700; font-size: 1rem; }
+  .company-card .co-tag { font-size: 0.7rem; background: #f1f5f9; color: #475569; padding: 0.1rem 0.5rem; border-radius: 999px; font-weight: 600; }
+  .company-card .co-flag { font-size: 0.85rem; color: var(--muted); }
+  .company-card .co-products { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.1rem; }
+  .company-card .prod-chip { font-size: 0.75rem; background: #eff6ff; color: #1e3a8a; border: 1px solid #bfdbfe; padding: 0.1rem 0.5rem; border-radius: 4px; }
+  .company-card .co-link { font-size: 0.75rem; color: var(--brand-hover); margin-top: auto; }
+  .company-card .co-link:hover { text-decoration: underline; }
+  .venue-dot { display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 50%; margin-right: 0.25rem; }
+  .venue-ddw { background: #3b82f6; }
+  .venue-esge { background: #10b981; }
+  .venue-both { background: linear-gradient(135deg, #3b82f6 50%, #10b981 50%); }
+</style>
+
 <section>
-  <h2 class="sec-h"><span class="num-badge">1</span>KOL 및 주요 회사/제품 정보</h2>
-  <div class="border rounded-lg bg-white p-8 text-center" style="border-color: var(--border);">
-    <p class="text-lg font-medium" style="color: var(--text);">(준비중)</p>
-    <p class="text-sm mt-2" style="color: var(--muted);">학회 참가 예상 KOL, 주요 경쟁사 및 제품 정보는 추후 업데이트 예정입니다.</p>
+  <h2 class="sec-h"><span class="num-badge">1</span>주요 회사 & 제품</h2>
+  <p class="text-sm" style="color: var(--muted);">
+    <span class="venue-dot venue-both"></span>DDW + ESGE 양쪽 참가 ·
+    <span class="venue-dot venue-ddw ml-2"></span>DDW 위주 ·
+    <span class="venue-dot venue-esge ml-2"></span>ESGE 위주
+  </p>
+
+  <h3 class="sub-h">내시경 플랫폼 (Big 4)</h3>
+  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
+    <div class="company-card">
+      <div class="co-head">
+        <span class="venue-dot venue-both"></span>
+        <span class="co-name">Olympus</span>
+        <span class="co-flag">🇯🇵</span>
+      </div>
+      <span class="co-tag">내시경 시스템 1위</span>
+      <div class="co-products">
+        <span class="prod-chip">EVIS X1</span>
+        <span class="prod-chip">GIF-H190 / CF-H190</span>
+        <span class="prod-chip">Dual Knife J</span>
+        <span class="prod-chip">EndoTherapy 액세서리</span>
+      </div>
+      <a href="https://medical.olympusamerica.com/" target="_blank" class="co-link">olympusamerica.com ↗</a>
+    </div>
+    <div class="company-card">
+      <div class="co-head">
+        <span class="venue-dot venue-both"></span>
+        <span class="co-name">Fujifilm</span>
+        <span class="co-flag">🇯🇵</span>
+      </div>
+      <span class="co-tag">내시경 플랫폼 · LCI/BLI</span>
+      <div class="co-products">
+        <span class="prod-chip">ELUXEO 8000</span>
+        <span class="prod-chip">EI-600</span>
+        <span class="prod-chip">LCI/BLI 광학</span>
+      </div>
+      <a href="https://www.fujifilm.com/us/en/healthcare/endoscopy" target="_blank" class="co-link">fujifilm.com/endoscopy ↗</a>
+    </div>
+    <div class="company-card">
+      <div class="co-head">
+        <span class="venue-dot venue-both"></span>
+        <span class="co-name">PENTAX Medical</span>
+        <span class="co-flag">🇯🇵</span>
+      </div>
+      <span class="co-tag">내시경 · iScan</span>
+      <div class="co-products">
+        <span class="prod-chip">DEFINA J10</span>
+        <span class="prod-chip">i10 시리즈</span>
+        <span class="prod-chip">INSPIRA</span>
+      </div>
+      <a href="https://www.pentaxmedical.com/" target="_blank" class="co-link">pentaxmedical.com ↗</a>
+    </div>
+    <div class="company-card">
+      <div class="co-head">
+        <span class="venue-dot venue-both"></span>
+        <span class="co-name">Ambu</span>
+        <span class="co-flag">🇩🇰</span>
+      </div>
+      <span class="co-tag">1회용 내시경</span>
+      <div class="co-products">
+        <span class="prod-chip">aScope Duodeno</span>
+        <span class="prod-chip">aScope Gastro</span>
+        <span class="prod-chip">aScope Colon</span>
+      </div>
+      <a href="https://www.ambu.com/" target="_blank" class="co-link">ambu.com ↗</a>
+    </div>
+  </div>
+
+  <h3 class="sub-h">장비·액세서리 대형사</h3>
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+    <div class="company-card">
+      <div class="co-head">
+        <span class="venue-dot venue-both"></span>
+        <span class="co-name">Boston Scientific</span>
+        <span class="co-flag">🇺🇸</span>
+      </div>
+      <span class="co-tag">Closure · Stent · ESD</span>
+      <div class="co-products">
+        <span class="prod-chip">Resolution Clip</span>
+        <span class="prod-chip">SpyGlass DS</span>
+        <span class="prod-chip">WallFlex Stent</span>
+        <span class="prod-chip">OverStitch (Apollo)</span>
+      </div>
+      <a href="https://www.bostonscientific.com/en-US/medical-specialties/gastroenterology.html" target="_blank" class="co-link">bostonscientific.com ↗</a>
+    </div>
+    <div class="company-card">
+      <div class="co-head">
+        <span class="venue-dot venue-both"></span>
+        <span class="co-name">Medtronic</span>
+        <span class="co-flag">🇺🇸</span>
+      </div>
+      <span class="co-tag">AI 탐지 · 전기수술</span>
+      <div class="co-products">
+        <span class="prod-chip">GI Genius (AI)</span>
+        <span class="prod-chip">Captivator EMR</span>
+        <span class="prod-chip">Beacon Endoscopic</span>
+      </div>
+      <a href="https://www.medtronic.com/covidien/en-us/products/gastrointestinal-endoscopy.html" target="_blank" class="co-link">medtronic.com ↗</a>
+    </div>
+    <div class="company-card">
+      <div class="co-head">
+        <span class="venue-dot venue-both"></span>
+        <span class="co-name">Cook Medical</span>
+        <span class="co-flag">🇺🇸</span>
+      </div>
+      <span class="co-tag">Hemostasis · Stent</span>
+      <div class="co-products">
+        <span class="prod-chip">Hemospray</span>
+        <span class="prod-chip">Evolution Stent</span>
+        <span class="prod-chip">Zimmon Papillotome</span>
+      </div>
+      <a href="https://www.cookmedical.com/specialties/endoscopy/" target="_blank" class="co-link">cookmedical.com ↗</a>
+    </div>
+    <div class="company-card">
+      <div class="co-head">
+        <span class="venue-dot venue-esge"></span>
+        <span class="co-name">ERBE Elektromedizin</span>
+        <span class="co-flag">🇩🇪</span>
+      </div>
+      <span class="co-tag">전기수술 · APC</span>
+      <div class="co-products">
+        <span class="prod-chip">VIO 3 / 300 D</span>
+        <span class="prod-chip">APC 2</span>
+        <span class="prod-chip">ERBEJET 2</span>
+      </div>
+      <a href="https://erbe-med.com/" target="_blank" class="co-link">erbe-med.com ↗</a>
+    </div>
+    <div class="company-card">
+      <div class="co-head">
+        <span class="venue-dot venue-both"></span>
+        <span class="co-name">Ovesco Endoscopy</span>
+        <span class="co-flag">🇩🇪</span>
+      </div>
+      <span class="co-tag">OTSC 클립 · 전체두께절제</span>
+      <div class="co-products">
+        <span class="prod-chip">OTSC System</span>
+        <span class="prod-chip">FTRD</span>
+        <span class="prod-chip">remOVE</span>
+      </div>
+      <a href="https://www.ovesco.com/" target="_blank" class="co-link">ovesco.com ↗</a>
+    </div>
+    <div class="company-card">
+      <div class="co-head">
+        <span class="venue-dot venue-both"></span>
+        <span class="co-name">STERIS Endoscopy</span>
+        <span class="co-flag">🇺🇸</span>
+      </div>
+      <span class="co-tag">재처리 · Infection Control</span>
+      <div class="co-products">
+        <span class="prod-chip">SYSTEM 1E</span>
+        <span class="prod-chip">TD100 세정제</span>
+      </div>
+      <a href="https://www.steris.com/healthcare" target="_blank" class="co-link">steris.com ↗</a>
+    </div>
+  </div>
+
+  <h3 class="sub-h">Specialized · AI · 신기술</h3>
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+    <div class="company-card">
+      <div class="co-head">
+        <span class="venue-dot venue-esge"></span>
+        <span class="co-name">Creo Medical</span>
+        <span class="co-flag">🇬🇧</span>
+      </div>
+      <span class="co-tag">고주파·마이크로파</span>
+      <div class="co-products">
+        <span class="prod-chip">Speedboat Inject+</span>
+        <span class="prod-chip">SB-ESD</span>
+      </div>
+      <a href="https://www.creomedical.com/" target="_blank" class="co-link">creomedical.com ↗</a>
+    </div>
+    <div class="company-card">
+      <div class="co-head">
+        <span class="venue-dot venue-ddw"></span>
+        <span class="co-name">Apollo Endosurgery</span>
+        <span class="co-flag">🇺🇸</span>
+      </div>
+      <span class="co-tag">봉합 · 비만치료</span>
+      <div class="co-products">
+        <span class="prod-chip">OverStitch Sx</span>
+        <span class="prod-chip">Orbera Balloon</span>
+      </div>
+      <a href="https://apolloendo.com/" target="_blank" class="co-link">apolloendo.com ↗</a>
+    </div>
+    <div class="company-card">
+      <div class="co-head">
+        <span class="venue-dot venue-both"></span>
+        <span class="co-name">Taewoong Medical</span>
+        <span class="co-flag">🇰🇷</span>
+      </div>
+      <span class="co-tag">Self-Expandable Stent</span>
+      <div class="co-products">
+        <span class="prod-chip">Niti-S Stent</span>
+        <span class="prod-chip">Hanaro Stent</span>
+      </div>
+      <a href="https://www.stent.net/" target="_blank" class="co-link">stent.net ↗</a>
+    </div>
+    <div class="company-card">
+      <div class="co-head">
+        <span class="venue-dot venue-both"></span>
+        <span class="co-name">Micro-Tech Endoscopy</span>
+        <span class="co-flag">🇨🇳</span>
+      </div>
+      <span class="co-tag">액세서리·ESD 나이프</span>
+      <div class="co-products">
+        <span class="prod-chip">SureClip</span>
+        <span class="prod-chip">T-Knife</span>
+        <span class="prod-chip">Stent 라인업</span>
+      </div>
+      <a href="https://www.micro-tech.de/en/" target="_blank" class="co-link">micro-tech.de ↗</a>
+    </div>
+    <div class="company-card">
+      <div class="co-head">
+        <span class="venue-dot venue-esge"></span>
+        <span class="co-name">Norgine</span>
+        <span class="co-flag">🇳🇱</span>
+      </div>
+      <span class="co-tag">장정결제</span>
+      <div class="co-products">
+        <span class="prod-chip">MOVIPREP</span>
+        <span class="prod-chip">PLENVU</span>
+      </div>
+      <a href="https://www.norgine.com/" target="_blank" class="co-link">norgine.com ↗</a>
+    </div>
+    <div class="company-card">
+      <div class="co-head">
+        <span class="venue-dot venue-ddw"></span>
+        <span class="co-name">ConMed</span>
+        <span class="co-flag">🇺🇸</span>
+      </div>
+      <span class="co-tag">전기수술 · 액세서리</span>
+      <div class="co-products">
+        <span class="prod-chip">IMAGE1 S</span>
+        <span class="prod-chip">Altrus Sealing</span>
+      </div>
+      <a href="https://www.conmed.com/en/medical-specialties/gastroenterology" target="_blank" class="co-link">conmed.com ↗</a>
+    </div>
+  </div>
+
+  <p class="text-xs mt-6" style="color: var(--muted);">
+    ※ 실제 스폰서 부스 배치는 각 학회 Floor Plan에서 최종 확인 —
+    <a href="https://ddw26.mapyourshow.com/8_0/floorplan/index.cfm" target="_blank" class="link">DDW Floor Plan</a> ·
+    <a href="https://esgedays.org/sponsors-exhibitors" target="_blank" class="link">ESGE Sponsors</a>.
+  </p>
+</section>
+
+<section>
+  <h2 class="sec-h"><span class="num-badge">2</span>KOL 리스트</h2>
+  <div class="border rounded-lg bg-white p-6 text-center" style="border-color: var(--border);">
+    <p class="text-base font-medium" style="color: var(--text);">(준비중)</p>
   </div>
 </section>
 
