@@ -215,11 +215,11 @@
   <h3 class="sub-h">연속 출장 타임라인</h3>
   <style>
     .trip-tl-wrap { overflow-x: auto; padding: 0.25rem 0 0.75rem; }
-    .trip-tl { position: relative; display: flex; align-items: stretch; gap: 0; min-width: 760px; padding-top: 0.5rem; }
+    .trip-tl { position: relative; display: flex; align-items: stretch; gap: 0; min-width: 1000px; padding-top: 0.5rem; }
     .trip-tl-line { position: absolute; top: 1.65rem; left: 5%; right: 5%; height: 3px; background: linear-gradient(to right, #1e3a8a 0 32%, #cbd5e1 32% 50%, #cbd5e1 50% 56%, #047857 56% 100%); border-radius: 999px; z-index: 0; }
     .trip-tl-line.dashed-mid { background: linear-gradient(to right, #1e3a8a 0 32%, transparent 32% 56%, #047857 56% 100%); }
     .trip-tl-line.dash-overlay { background: repeating-linear-gradient(to right, #94a3b8 0 6px, transparent 6px 12px); top: 1.65rem; left: calc(32% + 5%); right: calc(44% + 5%); width: auto; }
-    .tl-node { flex: 1; min-width: 110px; position: relative; z-index: 1; text-align: center; padding: 0 0.35rem; }
+    .tl-node { flex: 1; min-width: 140px; position: relative; z-index: 1; text-align: center; padding: 0 0.4rem; }
     .tl-node .tl-dot { width: 18px; height: 18px; border-radius: 50%; margin: 0 auto; border: 4px solid white; box-shadow: 0 0 0 2px #1e3a8a; background: #1e3a8a; }
     .tl-node.exhibit .tl-dot { width: 22px; height: 22px; background: #fbbf24; box-shadow: 0 0 0 2px #d97706; }
     .tl-node.esge .tl-dot { background: #047857; box-shadow: 0 0 0 2px #047857; }
@@ -237,38 +237,55 @@
       <div class="trip-tl-line dash-overlay"></div>
       <div class="tl-node">
         <div class="tl-dot"></div>
-        <div class="tl-date">5/1–2</div>
-        <div class="tl-label">출발 · 사전점검<br>올림푸스 교육</div>
+        <div class="tl-date">5/1 · 5/2</div>
+        <div class="tl-label">
+          5/1 시카고 도착<br>
+          <span style="color: #475569;">KE037 (10명) · DL0158 (김경남·장은진)</span><br>
+          5/2 사전점검 · 올림푸스 교육
+        </div>
       </div>
       <div class="tl-node exhibit">
         <div class="tl-dot"></div>
         <div class="tl-date">5/3–5</div>
-        <div class="tl-label">DDW 전시 3일</div>
+        <div class="tl-label">DDW 전시 3일<br><span style="color: #92400e;">출장자 12명</span></div>
       </div>
       <div class="tl-node">
         <div class="tl-dot"></div>
         <div class="tl-date">5/6 · 5/9</div>
-        <div class="tl-label">귀국 1차 8명<br>귀국 2차 2명</div>
+        <div class="tl-label">
+          5/6 KE038 귀국 8명<br>
+          <span style="color: #475569;">김경남·장은진 유럽 직행</span><br>
+          5/9 이창준·유재형 귀국 (DL1544 → KE5034)
+        </div>
       </div>
       <div class="tl-node transit">
         <div class="tl-dot"></div>
         <div class="tl-date" style="color: #64748b;">5/7–11</div>
-        <div class="tl-label">재정비</div>
+        <div class="tl-label">재정비<br>후발팀 합류 준비</div>
       </div>
       <div class="tl-node esge">
         <div class="tl-dot"></div>
-        <div class="tl-date">5/12–13</div>
-        <div class="tl-label">밀라노 도착<br>사전점검</div>
+        <div class="tl-date">5/12 · 5/13</div>
+        <div class="tl-label">
+          5/12 OZ0581 후발팀 도착<br>
+          <span style="color: #475569;">ICN 13:45 → MXP 20:00</span><br>
+          5/13 사전점검 · 부스 셋업
+        </div>
       </div>
       <div class="tl-node esge exhibit">
         <div class="tl-dot"></div>
         <div class="tl-date">5/14–16</div>
-        <div class="tl-label">ESGE 전시 3일</div>
+        <div class="tl-label">ESGE 전시 3일<br><span style="color: #065f46;">출장자 10명</span></div>
       </div>
       <div class="tl-node esge">
         <div class="tl-dot"></div>
         <div class="tl-date">5/17 · 5/19</div>
-        <div class="tl-label">귀국 1차 6명<br>귀국 2차 4명</div>
+        <div class="tl-label">
+          5/17 KE0928 귀국 6명<br>
+          <span style="color: #475569;">김경남·권태빈·장은진·에르헤스·이은상·안현석</span><br>
+          5/19 OZ 귀국 4명<br>
+          <span style="color: #475569;">김한나·민병두·김정한·최지영</span>
+        </div>
       </div>
     </div>
   </div>
