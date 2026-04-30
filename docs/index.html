@@ -100,6 +100,16 @@
     .qr-modal p { color: #64748b; font-size: 0.875rem; margin-bottom: 1rem; }
     .qr-modal img { display: block; margin: 0 auto 1rem; border: 1px solid var(--border); border-radius: 6px; }
 
+    /* Lightbox for booth images */
+    .booth-img { cursor: zoom-in; transition: opacity 0.15s; }
+    .booth-img:hover { opacity: 0.85; }
+    .lightbox { position: fixed; inset: 0; background: rgba(15,23,42,0.92); display: flex; align-items: center; justify-content: center; z-index: 60; padding: 1rem; cursor: zoom-out; animation: fadeIn 0.15s ease-out; }
+    .lightbox.hidden { display: none; }
+    .lightbox img { max-width: 100%; max-height: calc(100vh - 5rem); border-radius: 4px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .lightbox-caption { position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); color: white; font-size: 0.875rem; background: rgba(0,0,0,0.5); padding: 0.4rem 1rem; border-radius: 999px; white-space: nowrap; max-width: calc(100% - 2rem); overflow: hidden; text-overflow: ellipsis; }
+    .lightbox-close { position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.15); border: 0; color: white; font-size: 1.75rem; width: 2.5rem; height: 2.5rem; border-radius: 50%; cursor: pointer; line-height: 1; padding: 0; }
+    .lightbox-close:hover { background: rgba(255,255,255,0.3); }
+
     /* Screenshots with red markers */
     .screenshot { margin: 1rem 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: white; }
     .screenshot-wrap { position: relative; display: block; line-height: 0; }
@@ -245,7 +255,7 @@
         <div class="font-bold text-base mt-0.5">Booth No. <span style="color: var(--brand);">5046</span></div>
         <div class="text-xs mt-1" style="color: var(--muted);">McCormick Place West · 56 sqm ($25,200) · 12명 · FDA 허가 이후 첫 전시</div>
       </div>
-      <img src="images/ddw-booth-location.png" alt="DDW 부스 위치 (5046) — Hall Plan + Floor Plan" class="w-full">
+      <img src="images/ddw-booth-location.png" alt="DDW 부스 위치 (5046) — Hall Plan + Floor Plan" class="w-full booth-img" onclick="openLightbox(this.src, this.alt)">
     </div>
     <div class="border rounded-lg bg-white overflow-hidden" style="border-color: var(--border);">
       <div class="px-4 py-3 border-b" style="border-color: var(--border); background: #ecfdf5;">
@@ -253,7 +263,7 @@
         <div class="font-bold text-base mt-0.5">Booth No. <span style="color: #047857;">18</span></div>
         <div class="text-xs mt-1" style="color: var(--muted);">Allianz MiCo Gate 8 · 49 sqm (€39,200) · 10명 · 2번째 ESGE 참가</div>
       </div>
-      <img src="images/esge-booth-location.png" alt="ESGE 부스 위치 (18) — Hall Plan + Floor Plan" class="w-full">
+      <img src="images/esge-booth-location.png" alt="ESGE 부스 위치 (18) — Hall Plan + Floor Plan" class="w-full booth-img" onclick="openLightbox(this.src, this.alt)">
     </div>
   </div>
 
@@ -2928,6 +2938,13 @@
 </main>
 
 <!-- QR Modal -->
+<!-- Lightbox modal (booth images) -->
+<div id="lightbox" class="lightbox hidden" onclick="closeLightbox()">
+  <button type="button" class="lightbox-close" onclick="event.stopPropagation(); closeLightbox()" aria-label="닫기">×</button>
+  <img id="lightboxImg" alt="">
+  <div id="lightboxCaption" class="lightbox-caption"></div>
+</div>
+
 <div id="qrModal" class="qr-modal hidden" onclick="if(event.target===this) closeQR()">
   <div class="qr-modal-content">
     <button type="button" class="qr-close" onclick="closeQR()" aria-label="닫기">×</button>
@@ -2974,8 +2991,19 @@
   function closeQR() {
     document.getElementById('qrModal').classList.add('hidden');
   }
+  function openLightbox(src, caption) {
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightboxCaption').textContent = caption || '';
+    document.getElementById('lightbox').classList.remove('hidden');
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.add('hidden');
+  }
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeQR();
+    if (e.key === 'Escape') {
+      closeQR();
+      closeLightbox();
+    }
   });
 </script>
 
