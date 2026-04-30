@@ -214,77 +214,94 @@
 
   <h3 class="sub-h">연속 출장 타임라인</h3>
   <style>
-    .trip-tl-wrap { overflow-x: auto; padding: 0.25rem 0 0.75rem; }
-    .trip-tl { position: relative; display: flex; align-items: stretch; gap: 0; min-width: 1000px; padding-top: 0.5rem; }
-    .trip-tl-line { position: absolute; top: 1.65rem; left: 5%; right: 5%; height: 3px; background: linear-gradient(to right, #1e3a8a 0 32%, #cbd5e1 32% 50%, #cbd5e1 50% 56%, #047857 56% 100%); border-radius: 999px; z-index: 0; }
-    .trip-tl-line.dashed-mid { background: linear-gradient(to right, #1e3a8a 0 32%, transparent 32% 56%, #047857 56% 100%); }
-    .trip-tl-line.dash-overlay { background: repeating-linear-gradient(to right, #94a3b8 0 6px, transparent 6px 12px); top: 1.65rem; left: calc(32% + 5%); right: calc(44% + 5%); width: auto; }
-    .tl-node { flex: 1; min-width: 140px; position: relative; z-index: 1; text-align: center; padding: 0 0.4rem; }
-    .tl-node .tl-dot { width: 18px; height: 18px; border-radius: 50%; margin: 0 auto; border: 4px solid white; box-shadow: 0 0 0 2px #1e3a8a; background: #1e3a8a; }
-    .tl-node.exhibit .tl-dot { width: 22px; height: 22px; background: #fbbf24; box-shadow: 0 0 0 2px #d97706; }
+    .trip-tl-wrap { overflow-x: auto; padding: 0.25rem 0 1rem; }
+    .trip-tl { position: relative; display: flex; align-items: flex-start; gap: 0.55rem; min-width: 1100px; padding-top: 0.4rem; }
+    .trip-tl-line { position: absolute; top: 1.4rem; left: 0.55rem; right: 0.55rem; height: 3px; background: linear-gradient(to right, #1e3a8a 0 31%, #cbd5e1 31% 56%, #047857 56% 100%); border-radius: 999px; z-index: 0; }
+    .trip-tl-line.dash-overlay { background: repeating-linear-gradient(to right, #94a3b8 0 6px, transparent 6px 12px); left: 31%; right: 44%; width: auto; }
+    .tl-node { flex: 1; min-width: 150px; position: relative; z-index: 1; }
+    .tl-dot { width: 18px; height: 18px; border-radius: 50%; margin: 0 auto; border: 4px solid white; box-shadow: 0 0 0 2px #1e3a8a; background: #1e3a8a; }
+    .tl-node.exhibit .tl-dot { width: 22px; height: 22px; background: #fbbf24; box-shadow: 0 0 0 2px #d97706; margin-top: -2px; }
     .tl-node.esge .tl-dot { background: #047857; box-shadow: 0 0 0 2px #047857; }
     .tl-node.esge.exhibit .tl-dot { background: #34d399; box-shadow: 0 0 0 2px #047857; }
     .tl-node.transit .tl-dot { background: white; box-shadow: 0 0 0 2px #94a3b8; width: 14px; height: 14px; margin-top: 2px; }
-    .tl-node .tl-date { font-size: 0.8rem; font-weight: 700; color: var(--text); margin-top: 0.6rem; }
-    .tl-node .tl-label { font-size: 0.78rem; color: var(--muted); margin-top: 0.15rem; line-height: 1.3; }
-    .tl-node.exhibit .tl-label, .tl-node.exhibit .tl-date { color: #92400e; font-weight: 600; }
-    .tl-node.esge.exhibit .tl-label, .tl-node.esge.exhibit .tl-date { color: #065f46; }
-    .tl-node.esge .tl-date { color: #065f46; }
+    .tl-card { margin-top: 0.7rem; padding: 0.55rem 0.65rem; background: white; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 1px 2px rgba(15,23,42,0.04); text-align: left; }
+    .tl-node.exhibit .tl-card { border-color: #fcd34d; background: #fffbeb; }
+    .tl-node.esge .tl-card { border-color: #a7f3d0; }
+    .tl-node.esge.exhibit .tl-card { border-color: #34d399; background: #ecfdf5; }
+    .tl-node.transit .tl-card { background: #f8fafc; border-style: dashed; }
+    .tl-date { font-size: 0.875rem; font-weight: 700; color: #1e3a8a; padding-bottom: 0.3rem; margin-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+    .tl-node.exhibit .tl-date { color: #92400e; border-bottom-color: #fcd34d; }
+    .tl-node.esge .tl-date { color: #065f46; border-bottom-color: #a7f3d0; }
+    .tl-node.transit .tl-date { color: #64748b; border-bottom-style: dashed; }
+    .tl-row { font-size: 0.8rem; color: var(--text); line-height: 1.4; }
+    .tl-row + .tl-row { margin-top: 0.35rem; }
+    .tl-row .tl-key { font-weight: 600; }
+    .tl-sub { display: block; font-size: 0.72rem; color: #64748b; margin-top: 0.1rem; line-height: 1.35; }
+    .tl-pill { display: inline-block; font-size: 0.68rem; font-family: ui-monospace, monospace; background: #f1f5f9; color: #475569; padding: 0.05rem 0.4rem; border-radius: 3px; margin-right: 0.2rem; }
+    .tl-node.esge .tl-pill { background: #d1fae5; color: #065f46; }
   </style>
   <div class="trip-tl-wrap">
     <div class="trip-tl">
       <div class="trip-tl-line"></div>
       <div class="trip-tl-line dash-overlay"></div>
+
       <div class="tl-node">
         <div class="tl-dot"></div>
-        <div class="tl-date">5/1 · 5/2</div>
-        <div class="tl-label">
-          5/1 시카고 도착<br>
-          <span style="color: #475569;">KE037 (10명) · DL0158 (김경남·장은진)</span><br>
-          5/2 사전점검 · 올림푸스 교육
+        <div class="tl-card">
+          <div class="tl-date">5/1 · 5/2 (금·토)</div>
+          <div class="tl-row"><span class="tl-key">5/1</span> 시카고 도착<span class="tl-sub"><span class="tl-pill">KE037</span> 10명 · <span class="tl-pill">DL0158</span> 김경남·장은진</span></div>
+          <div class="tl-row"><span class="tl-key">5/2</span> 사전점검 · 올림푸스 교육</div>
         </div>
       </div>
+
       <div class="tl-node exhibit">
         <div class="tl-dot"></div>
-        <div class="tl-date">5/3–5</div>
-        <div class="tl-label">DDW 전시 3일<br><span style="color: #92400e;">출장자 12명</span></div>
+        <div class="tl-card">
+          <div class="tl-date">5/3–5 (일–화)</div>
+          <div class="tl-row"><span class="tl-key">DDW 전시 3일</span><span class="tl-sub">출장자 12명</span></div>
+        </div>
       </div>
+
       <div class="tl-node">
         <div class="tl-dot"></div>
-        <div class="tl-date">5/6 · 5/9</div>
-        <div class="tl-label">
-          5/6 KE038 귀국 8명<br>
-          <span style="color: #475569;">김경남·장은진 유럽 직행</span><br>
-          5/9 이창준·유재형 귀국 (DL1544 → KE5034)
+        <div class="tl-card">
+          <div class="tl-date">5/6 · 5/9 (수·토)</div>
+          <div class="tl-row"><span class="tl-key">5/6</span> 1차 귀국 8명<span class="tl-sub"><span class="tl-pill">KE038</span> · 김경남·장은진은 유럽 직행</span></div>
+          <div class="tl-row"><span class="tl-key">5/9</span> 2차 귀국 2명<span class="tl-sub"><span class="tl-pill">DL1544 → KE5034</span> 이창준·유재형</span></div>
         </div>
       </div>
+
       <div class="tl-node transit">
         <div class="tl-dot"></div>
-        <div class="tl-date" style="color: #64748b;">5/7–11</div>
-        <div class="tl-label">재정비<br>후발팀 합류 준비</div>
-      </div>
-      <div class="tl-node esge">
-        <div class="tl-dot"></div>
-        <div class="tl-date">5/12 · 5/13</div>
-        <div class="tl-label">
-          5/12 OZ0581 후발팀 도착<br>
-          <span style="color: #475569;">ICN 13:45 → MXP 20:00</span><br>
-          5/13 사전점검 · 부스 셋업
+        <div class="tl-card">
+          <div class="tl-date">5/7–11</div>
+          <div class="tl-row">재정비<span class="tl-sub">후발팀 합류 준비</span></div>
         </div>
       </div>
-      <div class="tl-node esge exhibit">
-        <div class="tl-dot"></div>
-        <div class="tl-date">5/14–16</div>
-        <div class="tl-label">ESGE 전시 3일<br><span style="color: #065f46;">출장자 10명</span></div>
-      </div>
+
       <div class="tl-node esge">
         <div class="tl-dot"></div>
-        <div class="tl-date">5/17 · 5/19</div>
-        <div class="tl-label">
-          5/17 KE0928 귀국 6명<br>
-          <span style="color: #475569;">김경남·권태빈·장은진·에르헤스·이은상·안현석</span><br>
-          5/19 OZ 귀국 4명<br>
-          <span style="color: #475569;">김한나·민병두·김정한·최지영</span>
+        <div class="tl-card">
+          <div class="tl-date">5/12 · 5/13 (화·수)</div>
+          <div class="tl-row"><span class="tl-key">5/12</span> 후발팀 밀라노 도착<span class="tl-sub"><span class="tl-pill">OZ0581</span> ICN 13:45 → MXP 20:00</span></div>
+          <div class="tl-row"><span class="tl-key">5/13</span> 사전점검 · 부스 셋업</div>
+        </div>
+      </div>
+
+      <div class="tl-node esge exhibit">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <div class="tl-date">5/14–16 (목–토)</div>
+          <div class="tl-row"><span class="tl-key">ESGE 전시 3일</span><span class="tl-sub">출장자 10명</span></div>
+        </div>
+      </div>
+
+      <div class="tl-node esge">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <div class="tl-date">5/17 · 5/19 (일·화)</div>
+          <div class="tl-row"><span class="tl-key">5/17</span> 1차 귀국 6명<span class="tl-sub"><span class="tl-pill">KE0928</span> 김경남·권태빈·장은진·에르헤스·이은상·안현석</span></div>
+          <div class="tl-row"><span class="tl-key">5/19</span> 2차 귀국 4명<span class="tl-sub"><span class="tl-pill">OZ</span> 김한나·민병두·김정한·최지영</span></div>
         </div>
       </div>
     </div>
