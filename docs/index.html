@@ -213,34 +213,88 @@
   <h2 class="sec-h"><span class="num-badge">1</span>전체 일정</h2>
 
   <h3 class="sub-h">연속 출장 타임라인</h3>
-  <div class="grid md:grid-cols-3 gap-3">
+  <style>
+    .trip-tl-wrap { overflow-x: auto; padding: 0.25rem 0 0.75rem; }
+    .trip-tl { position: relative; display: flex; align-items: stretch; gap: 0; min-width: 760px; padding-top: 0.5rem; }
+    .trip-tl-line { position: absolute; top: 1.65rem; left: 5%; right: 5%; height: 3px; background: linear-gradient(to right, #1e3a8a 0 32%, #cbd5e1 32% 50%, #cbd5e1 50% 56%, #047857 56% 100%); border-radius: 999px; z-index: 0; }
+    .trip-tl-line.dashed-mid { background: linear-gradient(to right, #1e3a8a 0 32%, transparent 32% 56%, #047857 56% 100%); }
+    .trip-tl-line.dash-overlay { background: repeating-linear-gradient(to right, #94a3b8 0 6px, transparent 6px 12px); top: 1.65rem; left: calc(32% + 5%); right: calc(44% + 5%); width: auto; }
+    .tl-node { flex: 1; min-width: 110px; position: relative; z-index: 1; text-align: center; padding: 0 0.35rem; }
+    .tl-node .tl-dot { width: 18px; height: 18px; border-radius: 50%; margin: 0 auto; border: 4px solid white; box-shadow: 0 0 0 2px #1e3a8a; background: #1e3a8a; }
+    .tl-node.exhibit .tl-dot { width: 22px; height: 22px; background: #fbbf24; box-shadow: 0 0 0 2px #d97706; }
+    .tl-node.esge .tl-dot { background: #047857; box-shadow: 0 0 0 2px #047857; }
+    .tl-node.esge.exhibit .tl-dot { background: #34d399; box-shadow: 0 0 0 2px #047857; }
+    .tl-node.transit .tl-dot { background: white; box-shadow: 0 0 0 2px #94a3b8; width: 14px; height: 14px; margin-top: 2px; }
+    .tl-node .tl-date { font-size: 0.8rem; font-weight: 700; color: var(--text); margin-top: 0.6rem; }
+    .tl-node .tl-label { font-size: 0.78rem; color: var(--muted); margin-top: 0.15rem; line-height: 1.3; }
+    .tl-node.exhibit .tl-label, .tl-node.exhibit .tl-date { color: #92400e; font-weight: 600; }
+    .tl-node.esge.exhibit .tl-label, .tl-node.esge.exhibit .tl-date { color: #065f46; }
+    .tl-node.esge .tl-date { color: #065f46; }
+  </style>
+  <div class="trip-tl-wrap">
+    <div class="trip-tl">
+      <div class="trip-tl-line"></div>
+      <div class="trip-tl-line dash-overlay"></div>
+      <div class="tl-node">
+        <div class="tl-dot"></div>
+        <div class="tl-date">5/1–2</div>
+        <div class="tl-label">출발 · 사전점검<br>올림푸스 교육</div>
+      </div>
+      <div class="tl-node exhibit">
+        <div class="tl-dot"></div>
+        <div class="tl-date">5/3–5</div>
+        <div class="tl-label">DDW 전시 3일</div>
+      </div>
+      <div class="tl-node">
+        <div class="tl-dot"></div>
+        <div class="tl-date">5/6 · 5/9</div>
+        <div class="tl-label">귀국 1차 8명<br>귀국 2차 2명</div>
+      </div>
+      <div class="tl-node transit">
+        <div class="tl-dot"></div>
+        <div class="tl-date" style="color: #64748b;">5/7–11</div>
+        <div class="tl-label">재정비</div>
+      </div>
+      <div class="tl-node esge">
+        <div class="tl-dot"></div>
+        <div class="tl-date">5/12–13</div>
+        <div class="tl-label">밀라노 도착<br>사전점검</div>
+      </div>
+      <div class="tl-node esge exhibit">
+        <div class="tl-dot"></div>
+        <div class="tl-date">5/14–16</div>
+        <div class="tl-label">ESGE 전시 3일</div>
+      </div>
+      <div class="tl-node esge">
+        <div class="tl-dot"></div>
+        <div class="tl-date">5/17 · 5/19</div>
+        <div class="tl-label">귀국 1차 6명<br>귀국 2차 4명</div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sub-h">숙소 & 이동</h3>
+  <div class="grid md:grid-cols-2 gap-4">
     <div class="border rounded-lg p-4 bg-white" style="border-color: var(--border);">
-      <div class="text-xs font-semibold" style="color: var(--brand);">STAGE 1 · DDW 2026</div>
-      <div class="font-semibold mt-1">Chicago, IL</div>
+      <div class="text-xs font-semibold" style="color: var(--brand);">DDW</div>
+      <div class="font-semibold mt-1">Congress Plaza Hotel</div>
+      <p class="text-sm mt-1" style="color: var(--muted);">520 South Michigan Avenue, Chicago, IL 60605</p>
       <ul class="text-sm mt-2 space-y-1" style="color: var(--text);">
-        <li><strong>5/1(금)</strong> 한국 출발 → 시카고 도착 (KE037 · 김경남·장은진은 DL0158)</li>
-        <li><strong>5/2(토)</strong> 사전점검 · 올림푸스 교육</li>
-        <li><strong>5/3–5(일–화)</strong> 전시 3일차</li>
-        <li><strong>5/6(수)</strong> 8명 귀국 / 2명 유럽 직행 (김경남·장은진) / 2명 5/9 별도 귀국 (이창준·유재형)</li>
+        <li>• 일정: 5/1(금) ~ 5/6(수), 5박6일</li>
+        <li>• Room: 총 7개 · Double Beds · 조식 불포함</li>
+        <li>• 공항(ORD) → 호텔: 차로 약 20~25분</li>
+        <li>• 호텔 → 학회장(McCormick Place): 차로 약 10분</li>
       </ul>
     </div>
     <div class="border rounded-lg p-4 bg-white" style="border-color: var(--border);">
-      <div class="text-xs font-semibold" style="color: #64748b;">이동 구간</div>
-      <div class="font-semibold mt-1">한국 ↔ 밀라노</div>
+      <div class="text-xs font-semibold" style="color: var(--brand);">ESGE</div>
+      <div class="font-semibold mt-1">Melia Milano</div>
+      <p class="text-sm mt-1" style="color: var(--muted);">Via Masaccio, 19, 20149 Milano MI, Italy</p>
       <ul class="text-sm mt-2 space-y-1" style="color: var(--text);">
-        <li><strong>5/6 → 5/12</strong> 귀국자 재정비 · 후발팀 합류</li>
-        <li><strong>5/6 → 5/12</strong> 김경남·장은진 미국→유럽 직행</li>
-        <li><strong>5/12(화)</strong> 후발팀 OZ0581 (ICN 13:45 → MXP 20:00)</li>
-      </ul>
-    </div>
-    <div class="border rounded-lg p-4 bg-white" style="border-color: var(--border);">
-      <div class="text-xs font-semibold" style="color: var(--brand);">STAGE 2 · ESGE Days 2026</div>
-      <div class="font-semibold mt-1">Milan, Italy</div>
-      <ul class="text-sm mt-2 space-y-1" style="color: var(--text);">
-        <li><strong>5/12(화)</strong> 밀라노 도착 · 호텔 체크인</li>
-        <li><strong>5/13(수)</strong> 사전점검 · 부스 셋업</li>
-        <li><strong>5/14–16(목–토)</strong> 전시 3일차</li>
-        <li><strong>5/17(일)</strong> 6명 귀국 / <strong>5/19(화)</strong> 4명 귀국</li>
+        <li>• 일정: 5/12(화) ~ 5/17(일), 5박6일 (후발팀 5/19까지 연장)</li>
+        <li>• Room: 총 6개 · Double Beds · 조식 불포함 · <strong>현장 결제</strong></li>
+        <li>• 공항(MXP) → 호텔: 차로 약 30~35분</li>
+        <li>• 호텔 → 학회장(Allianz MiCo Gate 8): 도보 약 10분</li>
       </ul>
     </div>
   </div>
@@ -442,32 +496,6 @@
       </table>
     </div>
   </details>
-
-  <h3 class="sub-h">숙소 & 이동</h3>
-  <div class="grid md:grid-cols-2 gap-4">
-    <div class="border rounded-lg p-4 bg-white" style="border-color: var(--border);">
-      <div class="text-xs font-semibold" style="color: var(--brand);">DDW</div>
-      <div class="font-semibold mt-1">Congress Plaza Hotel</div>
-      <p class="text-sm mt-1" style="color: var(--muted);">520 South Michigan Avenue, Chicago, IL 60605</p>
-      <ul class="text-sm mt-2 space-y-1" style="color: var(--text);">
-        <li>• 일정: 5/1(금) ~ 5/6(수), 5박6일</li>
-        <li>• Room: 총 7개 · Double Beds · 조식 불포함</li>
-        <li>• 공항(ORD) → 호텔: 차로 약 20~25분</li>
-        <li>• 호텔 → 학회장(McCormick Place): 차로 약 10분</li>
-      </ul>
-    </div>
-    <div class="border rounded-lg p-4 bg-white" style="border-color: var(--border);">
-      <div class="text-xs font-semibold" style="color: var(--brand);">ESGE</div>
-      <div class="font-semibold mt-1">Melia Milano</div>
-      <p class="text-sm mt-1" style="color: var(--muted);">Via Masaccio, 19, 20149 Milano MI, Italy</p>
-      <ul class="text-sm mt-2 space-y-1" style="color: var(--text);">
-        <li>• 일정: 5/12(화) ~ 5/17(일), 5박6일 (후발팀 5/19까지 연장)</li>
-        <li>• Room: 총 6개 · Double Beds · 조식 불포함 · <strong>현장 결제</strong></li>
-        <li>• 공항(MXP) → 호텔: 차로 약 30~35분</li>
-        <li>• 호텔 → 학회장(Allianz MiCo Gate 8): 도보 약 10분</li>
-      </ul>
-    </div>
-  </div>
 
   <h3 class="sub-h">🤝 Olympus Back Room 핸즈온 (DDW)</h3>
   <p class="text-sm mb-3" style="color: var(--muted);">담당: 장은진 · 김정한</p>
