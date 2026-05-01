@@ -21,7 +21,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from connectors.dropbox.upload import create_folder, list_folder_file_names, upload_file
+from connectors.dropbox.upload import (
+    create_folder,
+    list_folder_file_names,
+    list_folder_subfolders,
+    upload_file,
+)
 from connectors.slack.client import call
 from connectors.slack.files import download_file
 from connectors.slack.threads import fetch_thread_replies
@@ -43,6 +48,29 @@ STATE_PATH = Path(__file__).resolve().parents[1] / "state" / "lecture_sessions.j
 
 # "{trip_title} @{attendee}"
 _TITLE_RE = re.compile(r"^(.+?)\s+@\s*(\S+)\s*$")
+
+# "{attendee}_강의{N}"  →  capture N
+_LECTURE_FOLDER_RE = re.compile(r"_강의(\d+)$")
+
+
+def _next_lecture_number(trip_folder: str, attendee: str) -> int:
+    """Return next lecture number for an attendee based on actual Dropbox
+    folders under {trip_folder}/학회강의/. If no matching folder exists,
+    counter resets to 1 (so deleting Dropbox folders re-initializes N)."""
+    lecture_root_path = f"{trip_folder}/{LECTURE_ROOT}"
+    folders = list_folder_subfolders(lecture_root_path, path_root=TEAM_ROOT)
+    prefix = f"{attendee}_강의"
+    nums: list[int] = []
+    for name in folders:
+        if not name.startswith(prefix):
+            continue
+        m = _LECTURE_FOLDER_RE.search(name)
+        if m:
+            try:
+                nums.append(int(m.group(1)))
+            except ValueError:
+                pass
+    return (max(nums) + 1) if nums else 1
 
 
 def load_state() -> dict:
@@ -138,7 +166,10 @@ def start_session(channel: str, thread_ts: str, trigger_ts: str) -> dict:
             ),
         }
 
-    n = int(tstate.get("counter", 0)) + 1
+    # Derive N from actual Dropbox folders under {trip_folder}/학회강의/.
+    # This way, deleting the Dropbox folder resets the counter (the in-memory
+    # `counter` field in state is no longer the source of truth, just bookkeeping).
+    n = _next_lecture_number(tstate["trip_folder"], tstate["attendee"])
     folder_rel = f"{LECTURE_ROOT}/{tstate['attendee']}_강의{n}"
     tstate["counter"] = n
     tstate["active"] = {

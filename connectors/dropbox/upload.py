@@ -73,6 +73,29 @@ def list_folder_file_names(path: str, path_root: dict | None = None) -> set[str]
     return names
 
 
+def list_folder_subfolders(path: str, path_root: dict | None = None) -> set[str]:
+    """Return set of subfolder names directly inside `path`.
+    Returns empty set if folder doesn't exist.
+    """
+    names: set[str] = set()
+    try:
+        res = rpc("files/list_folder", {"path": path, "limit": 2000}, path_root=path_root)
+    except RuntimeError as e:
+        if "not_found" in str(e):
+            return names
+        raise
+    for e in res.get("entries", []):
+        if e.get(".tag") == "folder":
+            names.add(e.get("name", ""))
+    while res.get("has_more"):
+        cursor = res.get("cursor")
+        res = rpc("files/list_folder/continue", {"cursor": cursor}, path_root=path_root)
+        for e in res.get("entries", []):
+            if e.get(".tag") == "folder":
+                names.add(e.get("name", ""))
+    return names
+
+
 def upload_file(
     local_path: Path,
     dropbox_path: str,
