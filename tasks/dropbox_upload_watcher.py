@@ -142,6 +142,12 @@ def _handle_file_entry(entry: dict, channel: str, parent_cache: dict) -> None:
     else:
         day_label = parts[1]
 
+    # Lecture files (under {trip}/학회강의/...) are intentionally not
+    # announced — !끝 produces a single summary message in the lecture thread.
+    if len(parts) >= 2 and parts[1] == "학회강의":
+        print(f"[watcher] skip lecture upload: {name}")
+        return
+
     if _is_archive_written_file(name):
         print(f"[watcher] skip archive-written: {name}")
         return
